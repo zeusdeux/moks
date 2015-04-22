@@ -1,94 +1,101 @@
 {
   function node(type, value, line, column) {
     //console.log(type, value);
-    return { type: type, val: value, l: line, c: column }
+    //return { type: type, val: value, l: line, c: column }
+    return { type: type, val: value }
   }
 }
 
-start
-  = block:block
-  { return node("Start", block, line, column) }
+start = Expressions+
 
-// figure out how to wrap things not in unsafe or safe blocks
-// into safe blocks by default
-block
-  = safeBlockParen
-  / unsafeBlockParen
-  / statements:statement*
-  { return node("Block", statements, line, column) }
+Digit
+  = [0-9]
 
-// pure stuff in this block
-safeBlockParen
-  = "{" _* block:block _* "}"
-  { return node("SafeBlock", block, line, column) }
+Digits
+  = digits:Digit+
+  { return digits.join('') }
 
-// io stuff in this kinda block
-unsafeBlockParen
-  = "!{" _* block:block _* "}"
-  { return node("UnsafeBlock", block, line, column) }
+Alphabet
+  = [a-zA-Z]
 
-statement
-  = _* expr:expr [\;\n]? _*
-  { return node("Statement", expr, line, column) }
+Alphabets
+  = alphabets:Alphabet+
+  { return alphabets.join('') }
 
-expr
-  = expr:declaration
-  / expr:atom
-  / "(" expr:expr ")"
-  { return node("Expression", expr, line, column) }
+Symbol
+  = [!@#$%\^&*()\-_=\+\[\]\{\}\|;:'.,<>/?\\]
 
-declaration
-  = _* "let" _+ ids:ids+ _* "=" _* block:block _*
-  { return node("Declaration", [ids, block], line, column) }
+Whitespace
+  = [ \t]
 
-id
-  = id:[a-zA-Z]+
-  { return node("Identifier", id.join(''), line, column) }
+LineTerminator
+  = [\n\r]
 
-ids
-  = id:id _+
-  { return id }
+DoubleQuoteLiteral
+  = "\\\""
 
-atom
-  = number
-  / string
-  / bool
-  / id
+WhitespaceOrLineTerminator
+  = Whitespace
+  / LineTerminator
 
-number
-  = num:float
-  / num:integer
-  { return node("Number", num, line, column) }
+Char
+  = Alphabet / Digit / Symbol / Whitespace / LineTerminator
 
-integer
-  = digits
+Integer
+  = integer:Digits
+  { return parseInt(integer, 10) }
 
-float
-  = float:(digits"."digits)
+Float
+  = float:(Digits"."Digits)
   { return parseFloat(float.join(''), 10) }
 
-digits
-  = digit:digit+
-  { return parseInt(digit.join(''), 10) }
+String
+  = "\"" string:Char* "\""
+  { return node("String", string.join('')) }
 
-digit
-  = digit:[0-9]
+Boolean
+  = "true"  { return node("Boolean", true) }
+  / "false" { return node("Boolean", false) }
 
-string
-  = "\"" val:char* "\""
-  { return node("String", val.join(''), line, column) }
+Number
+  = float:Float { return node("Number", float) }
+  / int:Integer { return node("Number", int) }
 
-any
-  = .
+Identifier
+  = first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*
+  { return node("Identifier", first+rest.join('')) }
 
-char
-  = [a-zA-Z0-9_!@#$%^&*()\-=\+\{\}\[\]\\|]
+Identifiers
+  = id:Identifier Whitespace+
+  { return id }
 
-bool
-  = val:"true"i
-  / val:"false"i
-  {
-    if ("true" === val) return node("Bool", true, line, column)
-    else if ("false" === val) return node("Bool", false, line, column)
-  }_
- = [ \t\r]
+Atom
+  = Number
+  / Boolean
+  / String
+  / Identifier
+
+Block
+  = "{" WhitespaceOrLineTerminator* exprs:Expressions* WhitespaceOrLineTerminator* "}"
+  { return node("Block", exprs) }
+
+AtomAssignment
+  = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom
+  { return [id, atom, "AtomAssignment"] }
+
+BlockAssignment
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block
+  { return [ids, block, "BlockAssignment"] }
+
+AssignmentExpression
+  = atomAssignment:AtomAssignment   { return node("AssignmentExpression", atomAssignment) }
+  / blockAssignment:BlockAssignment { return node("AssignmentExpression", blockAssignment) }
+
+Expression
+  = AssignmentExpression
+  / Atom
+
+Expressions
+  = expr:Expression Whitespace* [;\n] Whitespace* { return expr }
+
+// start = Expression
