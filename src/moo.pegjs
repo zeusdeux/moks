@@ -9,6 +9,8 @@ start
   = block:block
   { return node("Start", block, line, column) }
 
+// figure out how to wrap things not in unsafe or safe blocks
+// into safe blocks by default
 block
   = safeBlockParen
   / unsafeBlockParen

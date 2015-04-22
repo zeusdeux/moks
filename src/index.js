@@ -10,8 +10,8 @@ var d = function(input, depth) {
 };
 
 // let a = !{ print a } -> unsafe block since io
-console.log('let a = {10; 20;}\nlet b = 20');
-var parsed = pegParse('let a = {10; 20;}\nlet b = 20');
+console.log('let a = {10; 20;}\nlet b = "omgwtfbbq"\nlet c = true');
+var parsed = pegParse('let a = {10; 20;}\nlet b = "omgwtfbbq";let c = true');
 
 d(parsed);
 
