@@ -10,13 +10,20 @@ start
   { return node("Start", block, line, column) }
 
 block
-  = blockParen
+  = safeBlockParen
+  / unsafeBlockParen
   / statements:statement*
   { return node("Block", statements, line, column) }
 
-blockParen
+// pure stuff in this block
+safeBlockParen
   = "{" _* block:block _* "}"
-  { return block }
+  { return node("SafeBlock", block, line, column) }
+
+// io stuff in this kinda block
+unsafeBlockParen
+  = "!{" _* block:block _* "}"
+  { return node("UnsafeBlock", block, line, column) }
 
 statement
   = _* expr:expr [\;\n]? _*

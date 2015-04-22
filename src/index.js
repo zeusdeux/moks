@@ -5,10 +5,15 @@ var path = require('path');
 var pegParse = peg.buildParser(
   fs.readFileSync(path.join(__dirname, '/moo.pegjs'), 'utf8')
 ).parse;
+var d = function(input, depth) {
+  console.log(inspect(input, {depth: depth || 100}));
+};
 
-var parsed = pegParse('let a = {10; 20;}');
+// let a = !{ print a } -> unsafe block since io
+console.log('let a = {10; 20;}\nlet b = 20');
+var parsed = pegParse('let a = {10; 20;}\nlet b = 20');
 
-console.log(inspect(parsed, {depth: 100}));
+d(parsed);
 
 //module.exports = pegParse(process.argv[2]);
 
