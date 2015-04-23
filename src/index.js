@@ -3,17 +3,20 @@ var peg = require('pegjs');
 var inspect = require('util').inspect;
 var path = require('path');
 var pegParse = peg.buildParser(
-  fs.readFileSync(path.join(__dirname, '/moo_new.pegjs'), 'utf8')
+  fs.readFileSync(path.join(__dirname, '/moo.pegjs'), 'utf8')
 ).parse;
 var d = function(input, depth) {
   if ('string' === typeof input && input.indexOf('\n') > -1) console.log(input);
   else console.log(inspect(input, { colors: true, showHidden: false, depth: depth || null }));
 };
 
+
+
 // let a = !{ print a } -> unsafe block since io
 //console.log('let a = {10; 20;}\nlet b = "omgwtfbbq"\nlet c = true');
 //var parsed = pegParse('let a = {10; 20;}\nlet b = "omgwtfbbq";let c = true');
 var inputs = [
+  '_123;',
   '_123\n',
   '"as\dasd \t\'asdad\'\n"\n',
   '12\n',
@@ -27,7 +30,22 @@ var inputs = [
   'let a b c = { 10; 20; }\n',
   'let a b c = {\n10\n20\n}\n',
   'let a = 10; let b = "dude"; let x y z = { "lol"; true; }\n',
-  'let a = 10\nlet b = "dude"\nlet x y z = {\n"lol"\ntrue\n}\n'
+  'let a = 10\nlet b = "dude"\nlet x y z = {\n"lol"\ntrue\n}\n',
+  'print 10;',
+  'print 10 20;',
+  'print 10 20\n',
+  'print a b;',
+  'print a b\n',
+  'print a "asd";',
+  'print 10 "asd"\n',
+  'print true a\n',
+  'let a = 10; let b x y = { print x y; }; b a 20;',
+  'let a = 10\nlet b x y = { print x y; }\nb a 20\n',
+  'let a b c = { print b c; }\na (10) 20\n',
+  'let forever = { forever; }; forever;',
+  '(10);',
+  '(a { print a; }) 20\n',
+  '(a {\n print a\n})\n',
 ];
 
 inputs.map(function(input) {
@@ -35,8 +53,6 @@ inputs.map(function(input) {
   d(pegParse(input));
   d('\n');
 });
-
-
 
 
 //module.exports = pegParse(process.argv[2]);

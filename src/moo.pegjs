@@ -91,11 +91,29 @@ AssignmentExpression
   = atomAssignment:AtomAssignment   { return node("AssignmentExpression", atomAssignment) }
   / blockAssignment:BlockAssignment { return node("AssignmentExpression", blockAssignment) }
 
+InvocationExpression
+  = Whitespace* functionId:Identifier args:Arguments*
+  { return node("InvocationExpression", [functionId, args]) }
+
+Argument
+  = Atom
+  / "(" Whitespace* invExpr:InvocationExpression Whitespace* ")" { return invExpr }
+  / "(" Whitespace* atom:Atom Whitespace* ")" { return atom }
+
+Arguments
+  = Whitespace+ arg:Argument
+  { return arg }
+
 Expression
   = AssignmentExpression
+  / InvocationExpression
+  / "(" Whitespace* expr:Expression Whitespace* ")" { return expr }
   / Atom
 
-Expressions
-  = expr:Expression Whitespace* [;\n] Whitespace* { return expr }
+ExpressionTerminator
+  = [;\n]
 
-// start = Expression
+Expressions
+  = expr:Expression Whitespace* ExpressionTerminator Whitespace* { return expr }
+
+// start = Expressions+
