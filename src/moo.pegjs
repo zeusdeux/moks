@@ -31,6 +31,22 @@ Whitespace
 LineTerminator
   = [\n\r]
 
+NullLiteral
+  = "null"
+
+TrueLiteral
+  = "true"
+
+FalseLiteral
+  = "false"
+
+BooleanLiteral
+  = TrueLiteral
+  / FalseLiteral
+
+Keyword
+  = "let"
+
 DoubleQuoteLiteral
   = "\\\""
 
@@ -40,6 +56,11 @@ WhitespaceOrLineTerminator
 
 Char
   = Alphabet / Digit / Symbol / Whitespace / LineTerminator
+
+ReservedWord
+  = Keyword
+  / NullLiteral
+  / BooleanLiteral
 
 Integer
   = integer:Digits
@@ -54,15 +75,15 @@ String
   { return node("String", string.join('')) }
 
 Boolean
-  = "true"  { return node("Boolean", true) }
-  / "false" { return node("Boolean", false) }
+  = TrueLiteral  { return node("Boolean", true) }
+  / FalseLiteral { return node("Boolean", false) }
 
 Number
   = float:Float { return node("Number", float) }
   / int:Integer { return node("Number", int) }
 
 Identifier
-  = first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*
+  = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*
   { return node("Identifier", first+rest.join('')) }
 
 Identifiers
