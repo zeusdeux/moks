@@ -87,26 +87,38 @@ BlockAssignment
   = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block
   { return [ids, block, "BlockAssignment"] }
 
+LambdaAssignment
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression
+  { return [ids, lambda, "LambdaAssignment"] }
+
+
 AssignmentExpression
-  = atomAssignment:AtomAssignment   { return node("AssignmentExpression", atomAssignment) }
-  / blockAssignment:BlockAssignment { return node("AssignmentExpression", blockAssignment) }
+  = atomAssignment:AtomAssignment     { return node("AssignmentExpression", atomAssignment) }
+  / blockAssignment:BlockAssignment   { return node("AssignmentExpression", blockAssignment) }
+  / lambdaAssignment:LambdaAssignment { return node("LambdaAssignment", lambdaAssignment) }
 
 InvocationExpression
-  = Whitespace* functionId:Identifier args:Arguments*
-  { return node("InvocationExpression", [functionId, args]) }
+  = Whitespace* functionId:Identifier args:Arguments*   { return node("InvocationExpression", [functionId, args]) }
+  / Whitespace* lambda:LambdaExpression args:Arguments* { return node("InvocationExpression", [lambda, args]) }
 
 Argument
   = Atom
+  / LambdaExpression
   / "(" Whitespace* invExpr:InvocationExpression Whitespace* ")" { return invExpr }
-  / "(" Whitespace* atom:Atom Whitespace* ")" { return atom }
+  / "(" Whitespace* atom:Atom Whitespace* ")"                    { return atom }
 
 Arguments
   = Whitespace+ arg:Argument
   { return arg }
 
+LambdaExpression
+  = "(" Whitespace* block:Block Whitespace* ")"                              { return node("LambdaExpression", [block]) }
+  / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")" { return node("LambdaExpression", [ids, block]) }
+
 Expression
   = AssignmentExpression
   / InvocationExpression
+  / LambdaExpression
   / "(" Whitespace* expr:Expression Whitespace* ")" { return expr }
   / Atom
 

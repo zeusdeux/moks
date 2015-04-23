@@ -44,8 +44,12 @@ var inputs = [
   'let a b c = { print b c; }\na (10) 20\n',
   'let forever = { forever; }; forever;',
   '(10);',
+  '({10;})\n',
+  '(a b {print a; print b;});',
   '(a { print a; }) 20\n',
   '(a {\n print a\n})\n',
+  'let a = (x y {\nprint x\nprint y\n})\n',
+  'map (v { print v; }) 20\n',
 ];
 
 inputs.map(function(input) {
