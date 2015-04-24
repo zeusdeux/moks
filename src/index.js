@@ -11,6 +11,13 @@ var d = function(input, depth) {
 };
 var pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.mok'), 'utf8');
 
+var inputs2 = [
+  'a&&b',
+  'a&&b&&c',
+  'a&&(b&&c)',
+  '(a)&&(c)',
+  '[a]&&c'
+];
 
 // let a = !{ print a } -> unsafe block since io
 //console.log('let a = {10; 20;}\nlet b = "omgwtfbbq"\nlet c = true');
@@ -35,6 +42,7 @@ var inputs = [
   'let a b c = {\n10\n20\n}\n',
   'let a = 10; let b = "dude"; let x y z = { "lol"; true; }\n',
   'let a = 10\nlet b = "dude"\nlet x y z = {\n"lol"\ntrue\n}\n',
+  'print 5 "-" 5;',
   'print 10;',
   'print 10 20;',
   'print 10 20\n',
@@ -55,8 +63,8 @@ var inputs = [
   'let a = (x y {\nprint x\nprint y\n})\n',
   'map (v { print v; }) 20\n',
   'print (fib 10);',
-  'print (2-1);',
   'if true {\n\tdosomething a\n} {\n\tlet t = 10\n\tdosomeotherthing t\n}\n',
+  'print (2-1);',
   '1+2\n',
   '(1-213);',
   '1/2\n10*2\n',
@@ -66,7 +74,10 @@ var inputs = [
   '!true;',
   '2 != 20\n',
   '2 < 20 || 3 > 40\n',
+  '(2 < 20) || (3 > 40)\n',
   '2 == 2 || 3 >= 30;',
+  '2 > 10 && 3 <= 20\n',
+  '2 < !(4 <= 10)\n',
   '(boom 10 - boom 20)\n',
   '1-9*10\n',
   '(1-9)*10;',

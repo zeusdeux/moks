@@ -6,21 +6,20 @@
   }
 }
 
-start = Expressions+
+start
+  = Expressions+
 
 Digit
   = [0-9]
 
 Digits
-  = digits:Digit+
-  { return digits.join('') }
+  = digits:Digit+                                                                                      { return digits.join('') }
 
 Alphabet
   = [a-zA-Z]
 
 Alphabets
-  = alphabets:Alphabet+
-  { return alphabets.join('') }
+  = alphabets:Alphabet+                                                                                { return alphabets.join('') }
 
 Symbol
   = [!@#$%\^&*()\-_=\+\[\]\{\}\|;:'.,<>/?\\]
@@ -58,23 +57,23 @@ Char
   = Alphabet / Digit / Symbol / Whitespace / LineTerminator
 
 ArithmeticOperator
-  = "/"  { return node('DivisionOperator', '/') }
-  / "*"  { return node('MultiplicationOperator', '*') }
-  / "+"  { return node('AdditionOperator', '+') }
-  / "-"  { return node('SubtractionOperator', '-') }
+  = "/"                                                                                                { return node('DivisionOperator', '/') }
+  / "*"                                                                                                { return node('MultiplicationOperator', '*') }
+  / "+"                                                                                                { return node('AdditionOperator', '+') }
+  / "-"                                                                                                { return node('SubtractionOperator', '-') }
 
 LogicalOperator
-  = "&&" { return node('AndOperator', '&&') }
-  / "||" { return node('OrOperator', '||') }
-  / "==" { return node('EqualityOperator', '==') }
-  / "!=" { return node('NotEqualOperator', '!=') }
-  / "<"  { return node('LTOperator', '<') }
-  / "<=" { return node('LTEOperator', '<=') }
-  / ">"  { return node('GTOperator', '>') }
-  / ">=" { return node('GTEOperator', '>=') }
+  = "&&"                                                                                               { return node('AndOperator', '&&') }
+  / "||"                                                                                               { return node('OrOperator', '||') }
+  / "=="                                                                                               { return node('EqualityOperator', '==') }
+  / "!="                                                                                               { return node('NotEqualOperator', '!=') }
+  / "<="                                                                                               { return node('LTEOperator', '<=') }
+  / ">="                                                                                               { return node('GTEOperator', '>=') }
+  / "<"                                                                                                { return node('LTOperator', '<') }
+  / ">"                                                                                                { return node('GTOperator', '>') }
 
 UnaryLogicalOperator
-  = "!"  { return node('NegationOperator', '!') }
+  = "!"                                                                                                { return node('NegationOperator', '!') }
 
 UnaryOperator
   = "+"
@@ -95,32 +94,31 @@ ReservedWord
   / Operator
 
 Integer
-  = integer:(UnaryOperator?Digits)
-  { return parseInt(integer.join(''), 10) }
+  = integer:(UnaryOperator?Digits)                                                                     { return parseInt(integer.join(''), 10) }
+
 
 Float
-  = float:(UnaryOperator?Digits"."Digits)
-  { return parseFloat(float.join(''), 10) }
+  = float:(UnaryOperator?Digits"."Digits)                                                              { return parseFloat(float.join(''), 10) }
+
 
 String
-  = "\"" string:Char* "\""
-  { return node("String", string.join('')) }
+  = "\"" string:Char* "\""                                                                             { return node("String", string.join('')) }
+
 
 Boolean
-  = TrueLiteral  { return node("Boolean", true) }
-  / FalseLiteral { return node("Boolean", false) }
+  = TrueLiteral                                                                                        { return node("Boolean", true) }
+  / FalseLiteral                                                                                       { return node("Boolean", false) }
 
 Number
-  = float:Float { return node("Number", float) }
-  / int:Integer { return node("Number", int) }
+  = float:Float                                                                                        { return node("Number", float) }
+  / int:Integer                                                                                        { return node("Number", int) }
 
 Identifier
-  = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*
-  { return node("Identifier", first+rest.join('')) }
+  = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*                                 { return node("Identifier", first+rest.join('')) }
+
 
 Identifiers
-  = id:Identifier Whitespace+
-  { return id }
+  = id:Identifier Whitespace+                                                                          { return id }
 
 Atom
   = Number
@@ -129,63 +127,61 @@ Atom
   / Identifier
 
 Block
-  = "{" WhitespaceOrLineTerminator* exprs:Expressions* WhitespaceOrLineTerminator* "}"
-  { return node("Block", exprs) }
+  = "{" WhitespaceOrLineTerminator* exprs:Expressions* WhitespaceOrLineTerminator* "}"                 { return node("Block", exprs) }
+
 
 AtomAssignment
-  = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom
-  { return [id, atom, "AtomAssignment"] }
+  = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom                  { return [id, atom, "AtomAssignment"] }
+
 
 BlockAssignment
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block
-  { return [ids, block, "BlockAssignment"] }
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block             { return [ids, block, "BlockAssignment"] }
+
 
 LambdaAssignment
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression
-  { return [ids, lambda, "LambdaAssignment"] }
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression { return [ids, lambda, "LambdaAssignment"] }
+
 
 AssignmentExpression
-  = atomAssignment:AtomAssignment     { return node("AssignmentExpression", atomAssignment) }
-  / blockAssignment:BlockAssignment   { return node("AssignmentExpression", blockAssignment) }
-  / lambdaAssignment:LambdaAssignment { return node("LambdaAssignment", lambdaAssignment) }
+  = atomAssignment:AtomAssignment                                                                      { return node("AssignmentExpression", atomAssignment) }
+  / blockAssignment:BlockAssignment                                                                    { return node("AssignmentExpression", blockAssignment) }
+  / lambdaAssignment:LambdaAssignment                                                                  { return node("LambdaAssignment", lambdaAssignment) }
 
 InvocationExpression
-  = Whitespace* functionId:Identifier args:Arguments*   { return node("InvocationExpression", [functionId, args]) }
-  / Whitespace* lambda:LambdaExpression args:Arguments* { return node("InvocationExpression", [lambda, args]) }
+  = Whitespace* functionId:Identifier args:Arguments*                                                  { return node("InvocationExpression", [functionId, node("Arguments", args)]); }
+  / Whitespace* lambda:LambdaExpression args:Arguments*                                                { return node("InvocationExpression", [lambda, node("Arguments", args)]) }
 
 Argument
   = Atom
   / LambdaExpression
-  / OperatorExpression
+  / Expression
   / Block
-  / "(" Whitespace* invExpr:InvocationExpression Whitespace* ")" { return invExpr }
-  / "(" Whitespace* atom:Atom Whitespace* ")"                    { return atom }
+  / "(" Whitespace* invExpr:InvocationExpression Whitespace* ")"                                       { return invExpr }
+  / "(" Whitespace* atom:Atom Whitespace* ")"                                                          { return atom }
 
 Arguments
-  = Whitespace+ arg:Argument
-  { return arg }
+  = Whitespace+ arg:Argument                                                                           { return arg }
 
 LambdaExpression
-  = "(" Whitespace* block:Block Whitespace* ")"                              { return node("LambdaExpression", [block]) }
-  / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")" { return node("LambdaExpression", [ids, block]) }
+  = "(" Whitespace* block:Block Whitespace* ")"                                                        { return node("LambdaExpression", [block]) }
+  / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")"                           { return node("LambdaExpression", [ids, block]) }
 
 OperatorExpression
-  = Whitespace* expr1:Atom Whitespace* op:BinaryOperator Whitespace* expr2:Atom Whitespace* { return node("OperatorExpression", [expr1, op, expr2]) }
-  / Whitespace* unaryLogicalOp:UnaryLogicalOperator expr:Expression Whitespace*             { return node("OperatorExpression", [unaryLogicalOp, expr]) }
-  / "(" Whitespace* opExpr:OperatorExpression Whitespace* ")"                               { return opExpr }
+  = Whitespace* binaryOp:BinaryOperator Whitespace* expr:Expression Whitespace* OperatorExpression*    { return node("OperatorExpression", [binaryOp, expr]) }
+  / Whitespace* unaryOp:UnaryLogicalOperator Whitespace* expr:Expression Whitespace* OperatorExpression* { return node("OperatorExpression", [unaryOp, expr]) }
 
 Expression
   = AssignmentExpression
-  / InvocationExpression
-  / LambdaExpression
+  / invExpr:InvocationExpression opExpr:OperatorExpression*                                            { if (opExpr.length) return [invExpr, opExpr]; else return invExpr }
+  / lambdaExpr:LambdaExpression opExpr:OperatorExpression*                                             { if (opExpr.length) return [lambdaExpr, opExpr]; else return lambdaExpr }
   / OperatorExpression
-  / "(" Whitespace* expr:Expression Whitespace* ")" { return expr }
-  / Atom
+  / "(" Whitespace* expr:Expression Whitespace* ")" opExpr:OperatorExpression*                         { if (opExpr.length) return [expr, opExpr]; else return expr }
+  / atom:Atom opExpr:OperatorExpression*                                                               { if (opExpr.length) return [atom, opExpr]; else return atom }
 
 ExpressionTerminator
   = [;\n]
 
 Expressions
-  = expr:Expression Whitespace* ExpressionTerminator Whitespace* { return expr }
+  = expr:Expression? Whitespace* ExpressionTerminator Whitespace*                                       { return expr }
 
 // start = Expressions+
