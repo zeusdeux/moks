@@ -63,11 +63,11 @@ ReservedWord
   / BooleanLiteral
 
 Integer
-  = integer:Digits
-  { return parseInt(integer, 10) }
+  = integer:(("-" / "+")?Digits)
+  { return parseInt(integer.join(''), 10) }
 
 Float
-  = float:(Digits"."Digits)
+  = float:(("-" / "+")?Digits"."Digits)
   { return parseFloat(float.join(''), 10) }
 
 String

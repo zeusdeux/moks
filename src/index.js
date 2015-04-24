@@ -9,7 +9,7 @@ var d = function(input, depth) {
   if ('string' === typeof input && input.indexOf('\n') > -1) console.log(input);
   else console.log(inspect(input, { colors: true, showHidden: false, depth: depth || null }));
 };
-
+var pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.moo'), 'utf8');
 
 
 // let a = !{ print a } -> unsafe block since io
@@ -21,6 +21,10 @@ var inputs = [
   '"as\dasd \t\'asdad\'\n"\n',
   '12\n',
   '123.21381720\n',
+  '-10;',
+  '-1231\n',
+  '-10.231293;',
+  '-123.2109480124\n',
   'true\n',
   'false\n',
   'let a = "mudit"\n',
@@ -50,6 +54,8 @@ var inputs = [
   '(a {\n print a\n})\n',
   'let a = (x y {\nprint x\nprint y\n})\n',
   'map (v { print v; }) 20\n',
+  'print (fib 10);',
+  pgm,
 ];
 
 inputs.map(function(input) {
