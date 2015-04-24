@@ -57,17 +57,49 @@ WhitespaceOrLineTerminator
 Char
   = Alphabet / Digit / Symbol / Whitespace / LineTerminator
 
+ArithmeticOperator
+  = "/" { return node('DivisionOperator', '/') }
+  / "*" { return node('MultiplicationOperator', '*') }
+  / "+" { return node('AdditionOperator', '+') }
+  / "-" { return node('SubtractionOperator', '-') }
+
+LogicalOperator
+  = "&&" { return node('AndOperator', '&&') }
+  / "||" { return node('OrOperator', '||') }
+  / "==" { return node('EqualityOperator', '==') }
+  / "!=" { return node('NotEqualOperator', '!=') }
+  / "<"  { return node('LTOperator', '<') }
+  / "<=" { return node('LTEOperator', '<=') }
+  / ">"  { return node('GTOperator', '>') }
+  / ">=" { return node('GTEOperator', '>=') }
+
+UnaryLogicalOperator
+  = "!"  { return node('NegationOperator', '!') }
+
+UnaryOperator
+  = "+"
+  / "-"
+
+BinaryOperator
+  = ArithmeticOperator
+  / LogicalOperator
+
+Operator
+  = BinaryOperator
+  / UnaryOperator
+
 ReservedWord
   = Keyword
   / NullLiteral
   / BooleanLiteral
+  / Operator
 
 Integer
-  = integer:(("-" / "+")?Digits)
+  = integer:(UnaryOperator?Digits)
   { return parseInt(integer.join(''), 10) }
 
 Float
-  = float:(("-" / "+")?Digits"."Digits)
+  = float:(UnaryOperator?Digits"."Digits)
   { return parseFloat(float.join(''), 10) }
 
 String
@@ -112,7 +144,6 @@ LambdaAssignment
   = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression
   { return [ids, lambda, "LambdaAssignment"] }
 
-
 AssignmentExpression
   = atomAssignment:AtomAssignment     { return node("AssignmentExpression", atomAssignment) }
   / blockAssignment:BlockAssignment   { return node("AssignmentExpression", blockAssignment) }
@@ -136,10 +167,15 @@ LambdaExpression
   = "(" Whitespace* block:Block Whitespace* ")"                              { return node("LambdaExpression", [block]) }
   / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")" { return node("LambdaExpression", [ids, block]) }
 
+OperatorExpression
+  = Whitespace* expr1:Atom Whitespace* op:BinaryOperator Whitespace* expr2:Atom Whitespace* { return node("OperatorExpression", [expr1, op, expr2]) }
+  / Whitespace* unaryLogicalOp:UnaryLogicalOperator expr:Expression Whitespace*             { return node("OperatorExpression", [unaryLogicalOp, expr]) }
+
 Expression
   = AssignmentExpression
   / InvocationExpression
   / LambdaExpression
+  / OperatorExpression
   / "(" Whitespace* expr:Expression Whitespace* ")" { return expr }
   / Atom
 
