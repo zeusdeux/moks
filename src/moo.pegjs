@@ -58,10 +58,10 @@ Char
   = Alphabet / Digit / Symbol / Whitespace / LineTerminator
 
 ArithmeticOperator
-  = "/" { return node('DivisionOperator', '/') }
-  / "*" { return node('MultiplicationOperator', '*') }
-  / "+" { return node('AdditionOperator', '+') }
-  / "-" { return node('SubtractionOperator', '-') }
+  = "/"  { return node('DivisionOperator', '/') }
+  / "*"  { return node('MultiplicationOperator', '*') }
+  / "+"  { return node('AdditionOperator', '+') }
+  / "-"  { return node('SubtractionOperator', '-') }
 
 LogicalOperator
   = "&&" { return node('AndOperator', '&&') }
