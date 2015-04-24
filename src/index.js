@@ -56,6 +56,7 @@ var inputs = [
   'map (v { print v; }) 20\n',
   'print (fib 10);',
   'print (2-1);',
+  'if true {\n\tdosomething a\n} {\n\tlet t = 10\n\tdosomeotherthing t\n}\n',
   '1+2\n',
   '(1-213);',
   '1/2\n10*2\n',

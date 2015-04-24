@@ -157,6 +157,7 @@ Argument
   = Atom
   / LambdaExpression
   / OperatorExpression
+  / Block
   / "(" Whitespace* invExpr:InvocationExpression Whitespace* ")" { return invExpr }
   / "(" Whitespace* atom:Atom Whitespace* ")"                    { return atom }
 
