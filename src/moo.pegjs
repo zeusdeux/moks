@@ -156,6 +156,7 @@ InvocationExpression
 Argument
   = Atom
   / LambdaExpression
+  / OperatorExpression
   / "(" Whitespace* invExpr:InvocationExpression Whitespace* ")" { return invExpr }
   / "(" Whitespace* atom:Atom Whitespace* ")"                    { return atom }
 
@@ -170,6 +171,7 @@ LambdaExpression
 OperatorExpression
   = Whitespace* expr1:Atom Whitespace* op:BinaryOperator Whitespace* expr2:Atom Whitespace* { return node("OperatorExpression", [expr1, op, expr2]) }
   / Whitespace* unaryLogicalOp:UnaryLogicalOperator expr:Expression Whitespace*             { return node("OperatorExpression", [unaryLogicalOp, expr]) }
+  / "(" Whitespace* opExpr:OperatorExpression Whitespace* ")"                               { return opExpr }
 
 Expression
   = AssignmentExpression

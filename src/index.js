@@ -55,6 +55,7 @@ var inputs = [
   'let a = (x y {\nprint x\nprint y\n})\n',
   'map (v { print v; }) 20\n',
   'print (fib 10);',
+  'print (2-1);',
   '1+2\n',
   '(1-213);',
   'true && false;',
