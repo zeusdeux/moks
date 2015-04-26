@@ -155,20 +155,25 @@ LambdaExpression
   / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")"                           { return node("LambdaExpression", [ids, block]) }
 
 OperatorExpression
-  = Whitespace* binaryOp:BinaryOperator Whitespace* expr:Expression Whitespace* OperatorExpression*    { return node("OperatorExpression", [binaryOp, expr]) }
-  / Whitespace* unaryOp:UnaryLogicalOperator Whitespace* expr:Expression Whitespace* OperatorExpression* { return node("OperatorExpression", [unaryOp, expr]) }
+  = Whitespace* arg1:(InvocationExpression / Atom) Whitespace* rest:FromOpExpression+                  { return node("OperatorExpression", [arg1].concat(rest[0])) }
+  / Whitespace* unaryOp:UnaryLogicalOperator Whitespace* expr:Expression Whitespace* FromOpExpression* { return node("OperatorExpression", [unaryOp, expr]) }
+  / "(" Whitespace* opExpr:OperatorExpression Whitespace* ")" Whitespace* rest:FromOpExpression*       { if (rest.length) return [opExpr].concat(rest[0]); else return opExpr }
+
+FromOpExpression
+  = Whitespace* binaryOp:BinaryOperator Whitespace* expr:Expression Whitespace*                        { return [binaryOp, expr] }
 
 Expression
   = AssignmentExpression
-  / invExpr:InvocationExpression opExpr:OperatorExpression*                                            { if (opExpr.length) return [invExpr, opExpr]; else return invExpr }
-  / lambdaExpr:LambdaExpression opExpr:OperatorExpression*                                             { if (opExpr.length) return [lambdaExpr, opExpr]; else return lambdaExpr }
-  / "(" Whitespace* expr:Expression Whitespace* ")" opExpr:OperatorExpression*                         { if (opExpr.length) return [expr, opExpr]; else return expr }
-  / atom:Atom opExpr:OperatorExpression*                                                               { if (opExpr.length) return [atom, opExpr]; else return atom }
+  / invExpr:InvocationExpression opExpr:FromOpExpression*                                              { if (opExpr.length) return [invExpr, opExpr]; else return invExpr }
+  / lambdaExpr:LambdaExpression                                                                        { return lambdaExpr }
+  / opExpr:OperatorExpression                                                                          { return opExpr }
+  / atom:Atom                                                                                          { return atom }
+  / "(" Whitespace* expr:Expression Whitespace* ")"                                                    { return expr }
 
 ExpressionTerminator
   = [;\n]
 
 Expressions
-  = expr:Expression? Whitespace* ExpressionTerminator Whitespace*                                       { return expr }
+  = expr:Expression? Whitespace* ExpressionTerminator Whitespace*                                      { return expr }
 
 // start = Expressions+
