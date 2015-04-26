@@ -46,9 +46,6 @@ BooleanLiteral
 Keyword
   = "let"
 
-DoubleQuoteLiteral
-  = "\\\""
-
 WhitespaceOrLineTerminator
   = Whitespace
   / LineTerminator
@@ -91,19 +88,15 @@ ReservedWord
   = Keyword
   / NullLiteral
   / BooleanLiteral
-  / Operator
 
 Integer
   = integer:(UnaryOperator?Digits)                                                                     { return parseInt(integer.join(''), 10) }
 
-
 Float
   = float:(UnaryOperator?Digits"."Digits)                                                              { return parseFloat(float.join(''), 10) }
 
-
 String
   = "\"" string:Char* "\""                                                                             { return node("String", string.join('')) }
-
 
 Boolean
   = TrueLiteral                                                                                        { return node("Boolean", true) }
@@ -115,7 +108,6 @@ Number
 
 Identifier
   = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*                                 { return node("Identifier", first+rest.join('')) }
-
 
 Identifiers
   = id:Identifier Whitespace+                                                                          { return id }
@@ -129,23 +121,19 @@ Atom
 Block
   = "{" WhitespaceOrLineTerminator* exprs:Expressions* WhitespaceOrLineTerminator* "}"                 { return node("Block", exprs) }
 
-
 AtomAssignment
-  = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom                  { return [id, atom, "AtomAssignment"] }
-
+  = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom                  { return node("AtomAssignment", [id, atom]) }
 
 BlockAssignment
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block             { return [ids, block, "BlockAssignment"] }
-
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", [ids, block]) }
 
 LambdaAssignment
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression { return [ids, lambda, "LambdaAssignment"] }
-
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression { return node("LambdaAssignment", [ids, lambda]) }
 
 AssignmentExpression
   = atomAssignment:AtomAssignment                                                                      { return node("AssignmentExpression", atomAssignment) }
   / blockAssignment:BlockAssignment                                                                    { return node("AssignmentExpression", blockAssignment) }
-  / lambdaAssignment:LambdaAssignment                                                                  { return node("LambdaAssignment", lambdaAssignment) }
+  / lambdaAssignment:LambdaAssignment                                                                  { return node("AssignmentExpression", lambdaAssignment) }
 
 InvocationExpression
   = Whitespace* functionId:Identifier args:Arguments*                                                  { return node("InvocationExpression", [functionId, node("Arguments", args)]); }
@@ -174,7 +162,6 @@ Expression
   = AssignmentExpression
   / invExpr:InvocationExpression opExpr:OperatorExpression*                                            { if (opExpr.length) return [invExpr, opExpr]; else return invExpr }
   / lambdaExpr:LambdaExpression opExpr:OperatorExpression*                                             { if (opExpr.length) return [lambdaExpr, opExpr]; else return lambdaExpr }
-  / OperatorExpression
   / "(" Whitespace* expr:Expression Whitespace* ")" opExpr:OperatorExpression*                         { if (opExpr.length) return [expr, opExpr]; else return expr }
   / atom:Atom opExpr:OperatorExpression*                                                               { if (opExpr.length) return [atom, opExpr]; else return atom }
 
