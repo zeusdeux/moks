@@ -9,7 +9,7 @@ var d = function(input, depth) {
   if ('string' === typeof input && input.indexOf('\n') > -1) console.log(input);
   else console.log(inspect(input, { colors: true, showHidden: false, depth: depth || null }));
 };
-var pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.moo'), 'utf8');
+var pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.mok'), 'utf8');
 
 
 // let a = !{ print a } -> unsafe block since io
