@@ -142,7 +142,7 @@ InvocationExpression "InvocationExpression"
 Argument "Argument"
   = Atom
   / LambdaExpression
-  / Expression
+  / (!AssignmentExpression expr:Expression) { return expr }
   / Block
 
 Arguments
