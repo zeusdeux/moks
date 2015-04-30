@@ -100,7 +100,9 @@ var inputs = [
   '(fib (1-1)) + (fib (1-2));',
   '(fib (n-1) + fib (n-2));',
   'fib (n-1) + fib (n-2);',
+  '(2) - 2\n',
   pgm,
+  'boom (2) - 2\n',
 ];
 
 inputs.map(function(input) {

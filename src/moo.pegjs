@@ -164,6 +164,8 @@ OpArgument "OpArgument"
 FromOpExpression "FromOpExpression"
   = Whitespace* binaryOp:BinaryOperator Whitespace* expr:Expression Whitespace*                        { return [binaryOp, expr] }
 
+//boom (2) - 2
+
 Expression "Expression"
   = AssignmentExpression
   / opExpr:OperatorExpression                                                                          { return opExpr }
