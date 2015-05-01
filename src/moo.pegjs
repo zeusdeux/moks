@@ -143,7 +143,7 @@ Argument "Argument"
   = Atom
   / LambdaExpression
   / Block
-  / "(" Whitespace* !AssignmentExpression expr:Expression Whitespace* ")"                                                    { return expr }
+  / "(" Whitespace* !AssignmentExpression expr:Expression Whitespace* ")"                              { return expr }
 
 Arguments
   = Whitespace+ arg:Argument                                                                           { return arg }
