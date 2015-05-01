@@ -142,8 +142,8 @@ InvocationExpression "InvocationExpression"
 Argument "Argument"
   = Atom
   / LambdaExpression
-  / (!AssignmentExpression expr:Expression)                                                            { return expr }
   / Block
+  / "(" Whitespace* !AssignmentExpression expr:Expression Whitespace* ")"                                                    { return expr }
 
 Arguments
   = Whitespace+ arg:Argument                                                                           { return arg }
@@ -170,7 +170,6 @@ Expression "Expression"
   = AssignmentExpression
   / opExpr:OperatorExpression                                                                          { return opExpr }
   / invExpr:InvocationExpression                                                                       { return invExpr }
-  / lambdaExpr:LambdaExpression                                                                        { return lambdaExpr }
   / atom:Atom                                                                                          { return atom }
   / "(" Whitespace* expr:Expression Whitespace* ")"                                                    { return expr }
 

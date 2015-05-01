@@ -102,6 +102,7 @@ var inputs = [
   'fib (n-1) + fib (n-2);',
   '(2) - 2\n',
   pgm,
+  '2 - boom (2);',
   'boom (2) - 2\n',
 ];
 
