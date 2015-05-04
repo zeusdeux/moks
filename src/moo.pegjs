@@ -153,8 +153,10 @@ LambdaExpression "LambdaExpression"
   / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")"                           { return node("LambdaExpression", [ids, block]) }
 
 OperatorExpression "OperatorExpression"
-  = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("OperatorExpression", [arg1].concat(rest[0])) }
-  / Whitespace* unaryOp:UnaryLogicalOperator expr:OpArgument Whitespace* rest:FromOpExpression*        { return node("OperatorExpression", [unaryOp, expr].concat(rest)) }
+  = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("BinaryOperatorExpression", [arg1].concat(rest[0])) }
+  / Whitespace* unaryOp:UnaryLogicalOperator expr:OpArgument Whitespace* rest:FromOpExpression*        { return node("UnaryOperatorExpression", [unaryOp, expr].concat(rest)) }
+  / Whitespace* predicate:OpArgument Whitespace* "?" Whitespace*
+    trueExpr:Expression Whitespace* ":" Whitespace* falseExpr:Expression                               { return node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr]) }
 
 OpArgument "OpArgument"
   = InvocationExpression

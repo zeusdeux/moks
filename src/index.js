@@ -101,9 +101,12 @@ var inputs = [
   '(fib (n-1) + fib (n-2));',
   'fib (n-1) + fib (n-2);',
   '(2) - 2\n',
-  pgm,
   '2 - boom (2);',
   'boom (2) - 2\n',
+  pgm,
+  'fib 10 > 20;',
+  'true ? a : b\n',
+  '((fib 10) > 20) ? true : (fib 40 > 10) ? false : true\n',
 ];
 
 inputs.map(function(input) {
