@@ -86,8 +86,15 @@ Operator "Operator"
 
 ReservedWord "ReservedWord"
   = Keyword
+  / FutureKeyword
   / NullLiteral
   / BooleanLiteral
+
+FutureKeyword "FutureKeyword"
+  = "export"
+  / "import"
+  / "as"
+  / "default"
 
 Integer "Integer"
   = integer:(UnaryOperator?Digits)                                                                     { return parseInt(integer.join(''), 10) }
