@@ -1,16 +1,9 @@
 var fs = require('fs');
-var peg = require('pegjs');
-var inspect = require('util').inspect;
 var path = require('path');
-var pegParse = peg.buildParser(
-  fs.readFileSync(path.join(__dirname, '/moo.pegjs'), 'utf8')
-).parse;
-var d = function(input, depth) {
-  if ('string' === typeof input && input.indexOf('\n') > -1) console.log(input);
-  else console.log(inspect(input, { colors: true, showHidden: false, depth: depth || null }));
-};
+var parse = require('./parser');
+var d = require('./util').log;
 var pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.mok'), 'utf8');
-
+var interpret = require('./interpreter');
 var inputs2 = [
   'a&&b',
   'a&&b&&c',
@@ -103,18 +96,23 @@ var inputs = [
   '(2) - 2\n',
   '2 - boom (2);',
   'boom (2) - 2\n',
-  pgm,
   'fib 10 > 20;',
   'true ? a : b\n',
   '((fib 10) > 20) ? true : (fib 40 > 10) ? false : true\n',
+  'if true { print "10"; } { print "1"; }\n',
+  pgm,
 ];
 
 inputs.map(function(input) {
   d(input);
-  d(pegParse(input));
+  d(parse(input));
   d('\n');
 });
 
+module.exports = {
+  parser: parse,
+  interpreter: interpret
+};
 
 //module.exports = pegParse(process.argv[2]);
 

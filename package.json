@@ -6,9 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "moks": "./bin/moks"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "debug": "^2.1.3",
     "pegjs": "^0.8.0"
   },
   "devDependencies": {
