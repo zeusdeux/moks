@@ -7,7 +7,7 @@
 }
 
 start
-  = Expressions+
+  = exprs:Expressions+                                                                                 { return node('Program', exprs.filter(function(e){ return !!e; })) }
 
 Digit "Digit"
   = [0-9]
@@ -125,7 +125,7 @@ AtomAssignment "AtomAssignment"
   = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom                  { return node("AtomAssignment", [id, atom]) }
 
 BlockAssignment "BlockAssignment"
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", [ids, block]) }
+  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", ids.push(block) && ids) }
 
 LambdaAssignment "LambdaAssignment"
   = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression { return node("LambdaAssignment", [ids, lambda]) }

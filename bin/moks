@@ -1,9 +1,14 @@
 #! /usr/bin/env node
 
 var fs        = require('fs');
+var scope     = require('../src/scope');
+var stdlib    = require('../src/stdlib');
 var parse     = require('../src/parser');
 var interpret = require('../src/interpreter');
 var args      = process.argv.slice(2);
 
 
-interpret(parse(fs.readFileSync(args[0], {encoding: 'utf-8'})));
+interpret(
+  parse(fs.readFileSync(args[0], {encoding: 'utf-8'})),
+  scope.createScope(stdlib, {})
+);
