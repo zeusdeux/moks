@@ -1,5 +1,3 @@
 module.exports = {
-  print: function(str) {
-    console.log(str);
-  }
+  print: console.log.bind(console)
 };
