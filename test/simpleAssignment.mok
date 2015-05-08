@@ -1,0 +1,5 @@
+let a = 12
+let b = a
+let c = -2000
+print a b
+print c
