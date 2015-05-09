@@ -7,19 +7,19 @@
 }
 
 start
-  = exprs:Expressions+                                                                                 { return node('Program', exprs.filter(function(e){ return !!e; })) }
+  = exprs:Expressions*                                                                                 { return node("Program", exprs.filter(function(e){ return !!e; })) }
 
 Digit "Digit"
   = [0-9]
 
 Digits "Digits"
-  = digits:Digit+                                                                                      { return digits.join('') }
+  = digits:Digit+                                                                                      { return digits.join("") }
 
 Alphabet "Alphabet"
   = [a-zA-Z]
 
 Alphabets "Alphabets"
-  = alphabets:Alphabet+                                                                                { return alphabets.join('') }
+  = alphabets:Alphabet+                                                                                { return alphabets.join("") }
 
 Symbol "Symbol"
   = [!@#$%\^&*()\-_=\+\[\]\{\}\|;:'.,<>/?\\]
@@ -54,23 +54,23 @@ Char "Char"
   = Alphabet / Digit / Symbol / Whitespace / LineTerminator
 
 ArithmeticOperator "ArithmeticOperator"
-  = "/"                                                                                                { return node('DivisionOperator', '/') }
-  / "*"                                                                                                { return node('MultiplicationOperator', '*') }
-  / "+"                                                                                                { return node('AdditionOperator', '+') }
-  / "-"                                                                                                { return node('SubtractionOperator', '-') }
+  = "/"                                                                                                { return node("DivisionOperator", "/") }
+  / "*"                                                                                                { return node("MultiplicationOperator", "*") }
+  / "+"                                                                                                { return node("AdditionOperator", "+") }
+  / "-"                                                                                                { return node("SubtractionOperator", "-") }
 
 LogicalOperator "LogicalOperator"
-  = "&&"                                                                                               { return node('AndOperator', '&&') }
-  / "||"                                                                                               { return node('OrOperator', '||') }
-  / "=="                                                                                               { return node('EqualityOperator', '==') }
-  / "!="                                                                                               { return node('NotEqualOperator', '!=') }
-  / "<="                                                                                               { return node('LTEOperator', '<=') }
-  / ">="                                                                                               { return node('GTEOperator', '>=') }
-  / "<"                                                                                                { return node('LTOperator', '<') }
-  / ">"                                                                                                { return node('GTOperator', '>') }
+  = "&&"                                                                                               { return node("AndOperator", "&&") }
+  / "||"                                                                                               { return node("OrOperator", "||") }
+  / "=="                                                                                               { return node("EqualityOperator", "==") }
+  / "!="                                                                                               { return node("NotEqualOperator", "!=") }
+  / "<="                                                                                               { return node("LTEOperator", "<=") }
+  / ">="                                                                                               { return node("GTEOperator", ">=") }
+  / "<"                                                                                                { return node("LTOperator", "<") }
+  / ">"                                                                                                { return node("GTOperator", ">") }
 
 UnaryLogicalOperator "UnaryLogicalOperator"
-  = "!"                                                                                                { return node('NegationOperator', '!') }
+  = "!"                                                                                                { return node("NegationOperator", "!") }
 
 UnaryOperator "UnaryOperator"
   = "+"
@@ -97,13 +97,13 @@ FutureKeyword "FutureKeyword"
   / "default"
 
 Integer "Integer"
-  = integer:(UnaryOperator?Digits)                                                                     { return parseInt(integer.join(''), 10) }
+  = integer:(UnaryOperator?Digits)                                                                     { return parseInt(integer.join(""), 10) }
 
 Float "Float"
-  = float:(UnaryOperator?Digits"."Digits)                                                              { return parseFloat(float.join(''), 10) }
+  = float:(UnaryOperator?Digits"."Digits)                                                              { return parseFloat(float.join(""), 10) }
 
 String "String"
-  = "\"" string:Char* "\""                                                                             { return node("String", string.join('')) }
+  = "\"" string:Char* "\""                                                                             { return node("String", string.join("")) }
 
 Boolean "Boolean"
   = TrueLiteral                                                                                        { return node("Boolean", true) }
@@ -114,7 +114,7 @@ Number "Number"
   / int:Integer                                                                                        { return node("Number", int) }
 
 Identifier "Identifier"
-  = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*                                 { return node("Identifier", first+rest.join('')) }
+  = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*                                 { return node("Identifier", first+rest.join("")) }
 
 Identifiers "Identifiers"
   = id:Identifier Whitespace+                                                                          { return id }
@@ -173,7 +173,10 @@ OpArgument "OpArgument"
 FromOpExpression "FromOpExpression"
   = Whitespace* binaryOp:BinaryOperator Whitespace* expr:Expression Whitespace*                        { return [binaryOp, expr] }
 
-//boom (2) - 2
+CommentExpression "CommentExpression"
+  = Whitespace* "//" Whitespace* comment:CommentContent*                                               { return node("CommentExpression", comment.join("")) }
+
+CommentContent = !ExpressionTerminator comment:.                                                       { return comment }
 
 Expression "Expression"
   = AssignmentExpression
@@ -186,6 +189,9 @@ ExpressionTerminator "ExpressionTerminator"
   = [;\n]
 
 Expressions
-  = expr:Expression? Whitespace* ExpressionTerminator Whitespace*                                      { return expr }
+  = expr:Expression? Whitespace* CommentExpression? Whitespace* ExpressionTerminator Whitespace*       { return expr }
 
-// start = Expressions+
+// notice how nothing is done with CommentExpression in the rule above. That basically to rid the AST of all commments
+// They are simply ignored.
+
+// start = Expressions*
