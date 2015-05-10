@@ -129,7 +129,7 @@
     "space-unary-ops": 2,
     "spaced-line-comment": 1,
     //es6 specific
-    "no-var": 0,
+    "no-var": 2,
     "generator-star-spacing": [2, "after"]
   }
 }
