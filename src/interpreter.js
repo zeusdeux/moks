@@ -11,7 +11,31 @@ const ops         = [
   'AndOperator', 'OrOperator', 'EqualityOperator', 'NotEqualOperator', 'LTEOperator',
   'GTEOperator', 'LTOperator', 'GTOperator', 'NegationOperator', 'UnaryOperator'
 ];
+const opsMap = {
+  DivisionOperator: '/',
+  MultiplicationOperator: '*',
+  AdditionOperator: '+',
+  SubtractionOperator: '-',
+  AndOperator: '&&',
+  OrOperator: '||',
+  EqualityOperator: '==',
+  NotEqualOperator: '!=',
+  LTEOperator: '<=',
+  GTEOperator: '>=',
+  LTOperator: '<',
+  GTOperator: '>',
+  NegationOperator: '!'
+};
 
+// isAtom :: Node -> Bool
+function isAtom(node) {
+  return atoms.indexOf(node.type) > -1;
+}
+
+// isOp :: Node -> Bool
+function isOp(node) {
+  return ops.indesOx(node.type) > -1;
+}
 
 // type Type = String
 // data Node v = Node Type v
