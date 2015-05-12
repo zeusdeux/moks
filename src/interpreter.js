@@ -71,7 +71,20 @@ function buildBlock(ids, blockNode) {
 function assignmentExpressionHandler(node, scope) {
   if ('AtomAssignment' === node.type) {
     assert(node.val.filter(v => atoms.indexOf(v.type) > -1).length === node.val.length, 'Non atoms found in atom assignment');
-    setInScope(scope, node.val[0].val, traverse(node.val[1], scope));
+    let traversalResult = traverse(node.val[1], scope);
+
+    // everything is a function
+    // so even atoms are converted into function that return the atom
+    // so thunks
+    if ('function' !== typeof traversalResult) traversalResult = new Function('', 'return ' + traversalResult + ';');
+
+    // d('Traversal result:');
+    // d('identifier:');
+    // d(node.val[0].val);
+    // d(traversalResult.toString());
+    // d('------------------------------');
+
+    setInScope(scope, node.val[0].val, traversalResult);
   }
   else if ('BlockAssignment' === node.type) {
     let ids = node.val[0];
@@ -87,7 +100,8 @@ function assignmentExpressionHandler(node, scope) {
 // argumentsHandler :: Node -> Scope -> [a]
 function argumentsHandler(argsNode, scope) {
   assert(argsNode.type === 'Arguments', 'Invalid arguments node received by arguments handler');
-  return argsNode.val.map(v => traverse(v, scope));
+  // since everything in scope is a function, call apply on whatever traverse returns
+  return argsNode.val.map(v => traverse(v, scope).apply(null));
 }
 
 // invocationExpressionHandler :: Node -> Scope -> a
