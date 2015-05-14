@@ -63,7 +63,7 @@ LogicalOperator "LogicalOperator"
   = "&&"                                                                                               { return node("AndOperator", "&&") }
   / "||"                                                                                               { return node("OrOperator", "||") }
   / "=="                                                                                               { return node("EqualityOperator", "==") }
-  / "!="                                                                                               { return node("NotEqualOperator", "!=") }
+  / "!="                                                                                               { return node("InequalityOperator", "!=") }
   / "<="                                                                                               { return node("LTEOperator", "<=") }
   / ">="                                                                                               { return node("GTEOperator", ">=") }
   / "<"                                                                                                { return node("LTOperator", "<") }
