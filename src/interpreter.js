@@ -1,3 +1,4 @@
+/* eslint no-new-func:0, no-use-before-define: 0 */
 'use strict';
 
 const assert      = require('assert');
