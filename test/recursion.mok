@@ -1,0 +1,10 @@
+let printUpto n = {
+  (n == 0)? {
+    print "Done"
+  } : {
+    print n
+    printUpto (n-1)
+  }
+}
+
+printUpto 5

@@ -1,0 +1,12 @@
+print (true ? 1 : 2)
+
+let a n = {
+  (n < 10)? {
+    print "Yeah %d is lesser than 10" n
+  } : {
+    print "Nope"
+    print "Just nope!"
+  }
+}
+
+a 9
