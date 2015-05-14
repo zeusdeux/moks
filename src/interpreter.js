@@ -111,6 +111,16 @@ function assignmentExpressionHandler(node, scope) {
     });
     d('/assignmentExpressionHandler -> BlockAssignment');
   }
+  else if ('OperatorAssignment' === node.type) {
+    d('assignmentExpressionHandler -> OperatorAssignment:');
+    d(node.val[0].val);
+    d(node.val[1]);
+    d('/assignmentExpressionHandler -> OperatorAssignment');
+
+    let traversalResult = traverse(node.val[1], scope);
+
+    setInScope(scope, node.val[0].val, () => traversalResult );
+  }
 }
 
 // argumentsHandler :: Node -> Scope -> [a]
