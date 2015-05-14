@@ -41,29 +41,21 @@ function atomsHandler(atom, scope) {
   }
 }
 
-// makeJSFnBodyString :: Node -> String
-function makeJSFnBodyString(blockNode) {
-  return 'return x + y'; // make this actually work ffs
-}
-
-// buildBlock :: ids -> Node -> ()
-function buildBlock(ids, blockNode) {
-  let params = ids.map(v => v.val);
-
-  d(params.concat(makeJSFnBodyString(blockNode)));
-  // build javascript function from ast at block node
-  return Function.apply(Object.create(null), params.concat(makeJSFnBodyString(blockNode)));
-}
 
 // assignmentExpressionHandler :: Node -> Scope -> undefined
 function assignmentExpressionHandler(node, scope) {
   if ('AtomAssignment' === node.type) {
     assert(node.val.filter(v => atoms.indexOf(v.type) > -1).length === node.val.length, 'Non atoms found in atom assignment');
+
+    // since this is an atom assignment, we know that traversal will hit
+    // atomsHandler which just returns a simple value (an atom value) or
+    // a function (if the atom it received was an identifer)
     let traversalResult = traverse(node.val[1], scope);
 
     // everything is a function
-    // so even atoms are converted into function that return the atom
-    // so thunks
+    // so even atoms are converted into functions that return the atom
+    // for e.g., 8 is converted to function (){ return 8; }
+    // so thunks really.
     if ('function' !== typeof traversalResult) traversalResult = new Function('', 'return ' + traversalResult + ';');
 
     // d('Traversal result:');
