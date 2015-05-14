@@ -3,11 +3,12 @@ let b = a
 let printer n b = { print n b; }
 let add x y = { x + y; }
 let mult x y = {
-  x * y
+  let m = x * y
+  m + 1
 }
 
 // a use less comment
 printer "true && false is %s" (true && false)
 printer "a is %d" a
 printer "b is %d" b
-printer "Sum of a * 20 is %d" (mult a 20)
+printer "(a * 20) + 1 is %d" (mult a 20)
