@@ -56,6 +56,9 @@ function assignmentExpressionHandler(node, scope) {
     // so even atoms are converted into functions that return the atom
     // for e.g., 8 is converted to function (){ return 8; }
     // so thunks really.
+    // when we do something like let a = 10; let b = a;
+    // then findInScope(scope, a) will return the thunk for 'a'
+    // so we needn't wrap it again hence the check below
     if ('function' !== typeof traversalResult) traversalResult = new Function('', 'return ' + traversalResult + ';');
 
     // d('Traversal result:');
@@ -70,9 +73,11 @@ function assignmentExpressionHandler(node, scope) {
     let blockNode = node.val[1];
     let params    = node.val[0].slice(1).map(v => v.val);
     let fnName    = node.val[0].shift().val; // take the fn name out from the identifier list
-    let newScope  = createScope({}, scope); // block creates new scope
 
     d('assignmentExpressionHandler -> BlockAssignment');
+
+    let newScope  = createScope({}, scope); // block creates new scope
+
     // add block params to new scope for that block
     newScope.__params__ = params;
     d('fn name:');
@@ -84,6 +89,7 @@ function assignmentExpressionHandler(node, scope) {
 
       d('blockassignment fn');
       d(args);
+      d(newScope);
 
       newScope = newScope.__params__.reduce((p, c) => {
         let temp = args.shift();
