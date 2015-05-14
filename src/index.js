@@ -1,10 +1,12 @@
-var fs = require('fs');
-var path = require('path');
-var parse = require('./parser');
-var d = require('./util').log;
-var pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.mok'), 'utf8');
-var interpret = require('./interpreter');
-var inputs2 = [
+'use strict';
+
+let fs = require('fs');
+let path = require('path');
+let parse = require('./parser');
+let d = require('./util').log;
+let pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.mok'), 'utf8');
+let interpret = require('./interpreter');
+let inputs2 = [
   'a&&b',
   'a&&b&&c',
   'a&&(b&&c)',
@@ -14,8 +16,8 @@ var inputs2 = [
 
 // let a = !{ print a } -> unsafe block since io
 //console.log('let a = {10; 20;}\nlet b = "omgwtfbbq"\nlet c = true');
-//var parsed = pegParse('let a = {10; 20;}\nlet b = "omgwtfbbq";let c = true');
-var inputs = [
+//let parsed = pegParse('let a = {10; 20;}\nlet b = "omgwtfbbq";let c = true');
+let inputs = [
   '_123;',
   '_123\n',
   '"as\dasd \t\'asdad\'\n"\n',
@@ -35,6 +37,8 @@ var inputs = [
   'let a b c = {\n10\n20\n}\n',
   'let a = 10; let b = "dude"; let x y z = { "lol"; true; }\n',
   'let a = 10\nlet b = "dude"\nlet x y z = {\n"lol"\ntrue\n}\n',
+  'let m = 10 + 20;',
+  'let m = {\n  let a =  m + 10\n}\n',
   'print 5 "-" 5;',
   'print 10;',
   'print 10 20;',
