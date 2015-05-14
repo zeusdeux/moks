@@ -167,7 +167,7 @@ OperatorExpression "OperatorExpression"
   = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("BinaryOperatorExpression", [arg1].concat(rest[0])) }
   / Whitespace* unaryOp:UnaryLogicalOperator expr:OpArgument Whitespace* rest:FromOpExpression*        { return node("UnaryOperatorExpression", [unaryOp, expr].concat(rest)) }
   / Whitespace* predicate:OpArgument Whitespace* "?" Whitespace*
-    trueExpr:Expression Whitespace* ":" Whitespace* falseExpr:Expression                               { return node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr]) }
+    trueExpr:(Expression / Block) Whitespace* ":" Whitespace* falseExpr:(Expression / Block)           { return node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr]) }
 
 OpArgument "OpArgument"
   = InvocationExpression

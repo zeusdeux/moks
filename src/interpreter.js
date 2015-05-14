@@ -211,6 +211,24 @@ function binaryOperatorExpressionHandler(node, scope) {
   return result;
 }
 
+// ternaryOperatorExpressionHandler :: Node -> Scope -> a
+function ternaryOperatorExpressionHandler(node, scope) {
+  let predicate   = traverse(node[0], scope);
+  let trueBranch  = node[1];
+  let falseBranch = node[2];
+
+  d('ternaryOperatorExpressionHandler');
+  d(predicate);
+  d(trueBranch);
+  d(falseBranch);
+  d('/ternaryOperatorExpressionHandler');
+
+  assert('boolean' === typeof predicate, 'Predicate given to ternary operator must be a boolean');
+  if (predicate) return traverse(trueBranch, scope);
+  return traverse(falseBranch, scope);
+
+}
+
 // traverse :: Node -> Scope -> undefined
 function traverse(root, scope) {
   // d(root.type);
@@ -221,6 +239,8 @@ function traverse(root, scope) {
   else if ('InvocationExpression' === root.type) return invocationExpressionHandler(root.val, scope);
 
   else if ('BinaryOperatorExpression' === root.type) return binaryOperatorExpressionHandler(root.val, scope);
+
+  else if ('TernaryOperatorExpression' === root.type) return ternaryOperatorExpressionHandler(root.val, scope);
 
   else if (isAtom(root)) return atomsHandler(root, scope);
 
