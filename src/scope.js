@@ -2,6 +2,11 @@ const d = require('./util').log;
 
 
 exports.createScope = function(obj, parentScope) {
+  d('Creating new scope...');
+  d(obj);
+  d(parentScope);
+  d('/createScope');
+
   obj = obj || {};
   return (obj.__parent__ = parentScope) && obj;
 };
@@ -18,6 +23,12 @@ exports.findInScope = function findInScope(scope, identifier) {
 };
 
 exports.setInScope = function (scope, identifier, value) {
+  d('SetInScope');
+  d(identifier);
+  d(value.toString());
+  d(scope);
+  d('/SetInScope');
+
   scope[identifier] = value;
   return true;
 };
