@@ -67,53 +67,157 @@ function assignmentExpressionHandler(node, scope) {
     setInScope(scope, node.val[0].val, traversalResult);
   }
   else if ('BlockAssignment' === node.type) {
-    let ids = node.val[0];
     let blockNode = node.val[1];
-    let fnName = ids.shift().val; // take the fn name out from the identifier list
-    let fn = buildBlock(ids, blockNode);
+    let params    = node.val[0].slice(1).map(v => v.val);
+    let fnName    = node.val[0].shift().val; // take the fn name out from the identifier list
+    let newScope  = createScope({}, scope); // block creates new scope
 
-    //d(fnName);
-    setInScope(scope, fnName, fn);
+    d('assignmentExpressionHandler -> BlockAssignment');
+    // add block params to new scope for that block
+    newScope.__params__ = params;
+    d('fn name:');
+    d(fnName);
+    d('params:');
+    d(params);
+    setInScope(scope, fnName, function(...args) {
+      let result;
+
+      d('blockassignment fn');
+      d(args);
+
+      newScope = newScope.__params__.reduce((p, c) => {
+        let temp = args.shift();
+
+        p[c] = function() {
+          return temp;
+        };
+        return p;
+      }, newScope);
+
+      d(blockNode);
+      d('Going to traverse');
+      result = traverse(blockNode, newScope);
+
+      d(result);
+      d('/blockassignment fn');
+
+      return result;
+    });
+    d('/assignmentExpressionHandler -> BlockAssignment');
   }
 }
 
 // argumentsHandler :: Node -> Scope -> [a]
 function argumentsHandler(argsNode, scope) {
   assert(argsNode.type === 'Arguments', 'Invalid arguments node received by arguments handler');
-  // since everything in scope is a function, call apply on whatever traverse returns
-  return argsNode.val.map(v => traverse(v, scope).apply(null));
+
+  return argsNode.val.map(v => {
+    let temp = traverse(v, scope);
+
+    if ('function' === typeof temp) temp = temp.apply(null);
+    return temp;
+  });
 }
 
 // invocationExpressionHandler :: Node -> Scope -> a
 function invocationExpressionHandler(node, scope) {
   let fn   = atomsHandler(node[0], scope);
   let args = argumentsHandler(node[1], scope);
+  let result;
 
-  fn = cu(fn);
+  d('invocationExpressionHandler');
+  d(node[0]);
   d(fn.toString());
   d(args);
-  return fn.apply(null, args);
+
+  // this is here so that debug log nests properly.
+  // I know, I KNOW! :(
+  result = fn.apply(null, args);
+
+  d(result);
+  d('/invocationExpressionHandler');
+
+  return result;
+}
+
+// binaryOperatorExpressionHandler :: Node -> Scope -> a
+function binaryOperatorExpressionHandler(node, scope) {
+  let arg1 = traverse(node[0], scope);
+  let op   = node[1];
+  let arg2 = traverse(node[2], scope);
+  let result;
+
+  d('binaryOperatorExpressionHandler:');
+  d(arg1);
+  d(op.type);
+  d(arg2);
+
+  switch(op.type) {
+    case 'DivisionOperator':
+      result = arg1 / arg2;
+      break;
+    case 'MultiplicationOperator':
+      result = arg1 * arg2;
+      break;
+    case 'AdditionOperator':
+      result = arg1 + arg2;
+      break;
+    case 'SubtractionOperator':
+      result = arg1 - arg2;
+      break;
+    case 'AndOperator':
+      result = arg1 && arg2;
+      break;
+    case 'OrOperator':
+      result = arg1 || arg2;
+      break;
+    case 'EqualityOperator':
+      result = arg1 === arg2;
+      break;
+    case 'InequalityOperator':
+      result = arg1 !== arg2;
+      break;
+    case 'LTEOperator':
+      result = arg1 <= arg2;
+      break;
+    case 'GTEOperator':
+      result = arg1 >= arg2;
+      break;
+    case 'LTOperator':
+      result = arg1 < arg2;
+      break;
+    case 'GTOperator':
+      result = arg1 > arg2;
+      break;
+  }
+  d(result);
+  d('/binaryOperatorExpressionHandler:');
+  return result;
 }
 
 // traverse :: Node -> Scope -> undefined
 function traverse(root, scope) {
-  d(root.type);
+  // d(root.type);
+  let result;
 
   if ('AssignmentExpression' === root.type) return assignmentExpressionHandler(root.val, scope);
 
   else if ('InvocationExpression' === root.type) return invocationExpressionHandler(root.val, scope);
 
-  // terminating condition is atoms
-  else if (atoms.indexOf(root.type) > -1) return atomsHandler(root, scope);
+  else if ('BinaryOperatorExpression' === root.type) return binaryOperatorExpressionHandler(root.val, scope);
+
+  else if (isAtom(root)) return atomsHandler(root, scope);
 
   // traverse over all child nodes from L to R
   if (Array.isArray(root.val)) {
     root.val.forEach(function(v) {
-      traverse(v, scope);
+      result = traverse(v, scope);
     });
+    // return result of last node (which technically means last line of whatever (program or block))
+    return result;
   }
   // else it's an object so it's just one child. traverse it
-  else traverse(root.val, scope);
+  return traverse(root.val, scope);
 }
 
 function interpret(ast, scope) {
