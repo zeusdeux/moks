@@ -6,27 +6,14 @@ const cu          = require('auto-curry');
 const d           = require('./util').log;
 const setInScope  = require('./scope').setInScope;
 const findInScope = require('./scope').findInScope;
+const createScope = require('./scope').createScope;
 const atoms       = ['Number', 'Boolean', 'String', 'Identifier'];
 const ops         = [
   'DivisionOperator', 'MultiplicationOperator', 'AdditionOperator', 'SubtractionOperator',
-  'AndOperator', 'OrOperator', 'EqualityOperator', 'NotEqualOperator', 'LTEOperator',
+  'AndOperator', 'OrOperator', 'EqualityOperator', 'InequalityOperator', 'LTEOperator',
   'GTEOperator', 'LTOperator', 'GTOperator', 'NegationOperator', 'UnaryOperator'
 ];
-const opsMap = {
-  DivisionOperator: '/',
-  MultiplicationOperator: '*',
-  AdditionOperator: '+',
-  SubtractionOperator: '-',
-  AndOperator: '&&',
-  OrOperator: '||',
-  EqualityOperator: '==',
-  NotEqualOperator: '!=',
-  LTEOperator: '<=',
-  GTEOperator: '>=',
-  LTOperator: '<',
-  GTOperator: '>',
-  NegationOperator: '!'
-};
+
 
 // isAtom :: Node -> Bool
 function isAtom(node) {
@@ -35,7 +22,7 @@ function isAtom(node) {
 
 // isOp :: Node -> Bool
 function isOp(node) {
-  return ops.indesOx(node.type) > -1;
+  return ops.indexOf(node.type) > -1;
 }
 
 // type Type = String
