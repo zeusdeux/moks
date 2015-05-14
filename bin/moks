@@ -1,4 +1,4 @@
-#! /usr/bin/env node --harmony_arrow_functions
+#! /usr/bin/env node --harmony_arrow_functions --harmony_rest_parameters
 
 var fs        = require('fs');
 var scope     = require('../src/scope');
