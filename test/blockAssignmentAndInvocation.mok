@@ -1,4 +1,11 @@
-let a = 1
+let a = 2
+let printer n b = { print n b; }
 let add x y = { x + y; }
-print (add a 2)
-print (add 10 20)
+let mult x y = {
+  x * y
+}
+
+// a use less comment
+printer "true && false is %s" (true && false)
+printer "a is %d" a
+printer "Sum of a * 20 is %d" (mult a 20)
