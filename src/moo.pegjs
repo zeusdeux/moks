@@ -132,13 +132,17 @@ AtomAssignment "AtomAssignment"
   = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom                  { return node("AtomAssignment", [id, atom]) }
 
 BlockAssignment "BlockAssignment"
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", [ids, block]) }
+  = Whitespace* "let" Whitespace+ ids:Identifiers+ Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", [ids, block]) }
 
 LambdaAssignment "LambdaAssignment"
-  = Whitespace* "let" Whitespace+ ids:Identifiers* Whitespace* "=" Whitespace* lambda:LambdaExpression { return node("LambdaAssignment", [ids, lambda]) }
+  = Whitespace* "let" Whitespace+ ids:Identifiers+ Whitespace* "=" Whitespace* lambda:LambdaExpression { return node("LambdaAssignment", [ids, lambda]) }
+
+OperatorAssignment "OperatorAssignment"
+  = Whitespace* "let" Whitespace+ id:Identifier Whitespace* "=" Whitespace* opExpr:OperatorExpression  { return node("OperatorAssignment", [id, opExpr]) }
 
 AssignmentExpression "AssignmentExpression"
-  = atomAssignment:AtomAssignment                                                                      { return node("AssignmentExpression", atomAssignment) }
+  = operatorAssignment:OperatorAssignment                                                              { return node("AssignmentExpression", operatorAssignment) }
+  / atomAssignment:AtomAssignment                                                                      { return node("AssignmentExpression", atomAssignment) }
   / blockAssignment:BlockAssignment                                                                    { return node("AssignmentExpression", blockAssignment) }
   / lambdaAssignment:LambdaAssignment                                                                  { return node("AssignmentExpression", lambdaAssignment) }
 
