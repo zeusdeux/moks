@@ -1,5 +1,5 @@
 # moks
-An interpreted language that I am writing @recursecenter
+An interpreted language that I am writing [@recursecenter](https://github.com/recursecenter).
 
 Sample program in `moks`:
 
