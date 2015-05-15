@@ -18,8 +18,10 @@ print (fib 10)
 
 Things/features I plan to experiment with in the future:
 
+
 - FFI to Javascript
 - module system
+- error handling
 - marking side effects syntactically
 - runtime optimizations
 - stack based runtime (currently uses the underlying js runtime stack)
