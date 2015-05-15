@@ -21,7 +21,6 @@ Things/features I plan to experiment with in the future:
 - FFI to Javascript
 - module system
 - marking side effects syntactically
-- calls into javascript
 - runtime optimizations
 - stack based runtime (currently uses the underlying js runtime stack)
 - macros
