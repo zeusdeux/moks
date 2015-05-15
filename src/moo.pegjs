@@ -117,7 +117,7 @@ Identifier "Identifier"
   = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*                                 { return node("Identifier", first+rest.join("")) }
 
 Identifiers "Identifiers"
-  = id:Identifier Whitespace+                                                                          { return id }
+  = Whitespace+ id:Identifier                                                                          { return id }
 
 Atom "Atom"
   = Number
@@ -129,10 +129,11 @@ Block "Block"
   = "{" WhitespaceOrLineTerminator* exprs:Expressions* WhitespaceOrLineTerminator* "}"                 { return node("Block", exprs) }
 
 AtomAssignment "AtomAssignment"
-  = Whitespace* "let" Whitespace+ id:Identifier Whitespace+ "=" Whitespace* atom:Atom                  { return node("AtomAssignment", [id, atom]) }
+  = Whitespace* "let" Whitespace+ id:Identifier Whitespace* "=" Whitespace* atom:Atom                  { return node("AtomAssignment", [id, atom]) }
 
+// the whitespace before and between ids is encoded in the Identifiers rule
 BlockAssignment "BlockAssignment"
-  = Whitespace* "let" Whitespace+ ids:Identifiers+ Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", [ids, block]) }
+  = Whitespace* "let" ids:Identifiers+ Whitespace* "=" Whitespace* block:Block                         { return node("BlockAssignment", [ids, block]) }
 
 LambdaAssignment "LambdaAssignment"
   = Whitespace* "let" Whitespace+ ids:Identifier Whitespace* "=" Whitespace* lambda:LambdaExpression   { return node("LambdaAssignment", [ids, lambda]) }
