@@ -38,6 +38,7 @@ let inputs = [
   'let a = 10; let b = "dude"; let x y z = { "lol"; true; }\n',
   'let a = 10\nlet b = "dude"\nlet x y z = {\n"lol"\ntrue\n}\n',
   'let m = 10 + 20;',
+  'let a = fib 10;',
   'let m = {\n  let a =  m + 10\n}\n',
   'print 5 "-" 5;',
   'print 10;',

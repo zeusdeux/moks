@@ -135,13 +135,17 @@ BlockAssignment "BlockAssignment"
   = Whitespace* "let" Whitespace+ ids:Identifiers+ Whitespace* "=" Whitespace* block:Block             { return node("BlockAssignment", [ids, block]) }
 
 LambdaAssignment "LambdaAssignment"
-  = Whitespace* "let" Whitespace+ ids:Identifiers+ Whitespace* "=" Whitespace* lambda:LambdaExpression { return node("LambdaAssignment", [ids, lambda]) }
+  = Whitespace* "let" Whitespace+ ids:Identifier Whitespace* "=" Whitespace* lambda:LambdaExpression   { return node("LambdaAssignment", [ids, lambda]) }
 
 OperatorAssignment "OperatorAssignment"
   = Whitespace* "let" Whitespace+ id:Identifier Whitespace* "=" Whitespace* opExpr:OperatorExpression  { return node("OperatorAssignment", [id, opExpr]) }
 
+InvocationAssignment "InvocationAssignment"
+  = Whitespace* "let" Whitespace+ id:Identifier Whitespace* "=" Whitespace* invExpr:InvocationExpression { return node("InvocationAssignment", [id, invExpr]) }
+
 AssignmentExpression "AssignmentExpression"
   = operatorAssignment:OperatorAssignment                                                              { return node("AssignmentExpression", operatorAssignment) }
+  / invocationAssignment:InvocationAssignment                                                          { return node("AssignmentExpression", invocationAssignment) }
   / atomAssignment:AtomAssignment                                                                      { return node("AssignmentExpression", atomAssignment) }
   / blockAssignment:BlockAssignment                                                                    { return node("AssignmentExpression", blockAssignment) }
   / lambdaAssignment:LambdaAssignment                                                                  { return node("AssignmentExpression", lambdaAssignment) }
@@ -167,7 +171,7 @@ OperatorExpression "OperatorExpression"
   = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("BinaryOperatorExpression", [arg1].concat(rest[0])) }
   / Whitespace* unaryOp:UnaryLogicalOperator expr:OpArgument Whitespace* rest:FromOpExpression*        { return node("UnaryOperatorExpression", [unaryOp, expr].concat(rest)) }
   / Whitespace* predicate:OpArgument Whitespace* "?" Whitespace*
-    trueExpr:(Expression / Block) Whitespace* ":" Whitespace* falseExpr:(Expression / Block)           { return node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr]) }
+    trueExpr:(Block / Expression) Whitespace* ":" Whitespace* falseExpr:(Block / Expression)           { return node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr]) }
 
 OpArgument "OpArgument"
   = InvocationExpression
