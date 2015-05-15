@@ -1,13 +1,13 @@
 # moks
-An interpreted language written @recursecenter
+An interpreted language that I am writing @recursecenter
 
 Sample program in `moks`:
 
 ```moks
 let fib n = {
-  if (n == 0 || n == 1) {
+  (n == 0 || n == 1)? {
      1
-  } {
+  } : {
      fib (n-1) + fib (n-2)
   }
 }
@@ -26,3 +26,5 @@ Things/features I plan to experiment with in the future:
 - macros
 - simple type system
 - pausable and rewindable code editing
+
+Also, if you use emacs, [here's](https://github.com/zeusdeux/moks-mode) a simple emacs major mode for [moks](https://github.com/zeusdeux/moks).
