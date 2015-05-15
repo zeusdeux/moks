@@ -1,12 +1,8 @@
 let fib n = {
-  (n <= 0)? {
+  (n == 0)? {
     1
   } : {
-    let n1 = fib (n-1)
-    let n2 = fib (n-2)
-    print n1
-    print n2
-    n1 + n2
+    fib (n-1) + fib (n-2)
   }
 }
 
