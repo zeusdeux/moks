@@ -18,6 +18,7 @@ print (fib 10)
 
 Things/features I plan to experiment with in the future:
 
+- FFI to Javascript
 - module system
 - marking side effects syntactically
 - calls into javascript
