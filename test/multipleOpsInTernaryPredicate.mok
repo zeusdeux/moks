@@ -1,0 +1,22 @@
+let a n = {
+  (n > 0 && n < 10)? {
+    print "%d is lesser than 10 but greater than 0" n
+  } : {
+    print "%d is all weird :/" n
+  }
+}
+
+a 8
+a 0
+
+// checking if no space after last id ('n') and '=' breaks everything
+let b n= {
+  (n > 0) && (n < 10) && (n != 5)? {
+    print "0 < %d < 10 and %d != 5" n n
+  } : {
+    print "why? no, really, WHY? %d" n
+  }
+}
+
+b 6
+b 5
