@@ -235,6 +235,21 @@ function ternaryOperatorExpressionHandler(node, scope) {
 
 }
 
+// unaryOperatorExpressionHandler :: Node -> Scope -> a
+function unaryOperatorExpressionHandler(node, scope) {
+  let op = node[0].type;
+  let param = traverse(node[1], scope);
+  let result;
+
+  switch(op) {
+    case 'NegationOperator':
+      assert('boolean' === typeof param, 'Boolean not operator can only be applied to a boolean');
+      result = !param;
+      break;
+  }
+  return result;
+}
+
 // traverse :: Node -> Scope -> undefined
 function traverse(root, scope) {
   // d(root.type);
@@ -247,6 +262,8 @@ function traverse(root, scope) {
   else if ('BinaryOperatorExpression' === root.type) return binaryOperatorExpressionHandler(root.val, scope);
 
   else if ('TernaryOperatorExpression' === root.type) return ternaryOperatorExpressionHandler(root.val, scope);
+
+  else if ('UnaryOperatorExpression' === root.type) return unaryOperatorExpressionHandler(root.val, scope);
 
   else if (isAtom(root)) return atomsHandler(root, scope);
 
