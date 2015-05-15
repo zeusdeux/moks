@@ -22,7 +22,7 @@ Alphabets "Alphabets"
   = alphabets:Alphabet+                                                                                { return alphabets.join("") }
 
 Symbol "Symbol"
-  = [!@#$%\^&*()\-_=\+\[\]\{\}\|;:'.,<>/?\\]
+  = [!@#$%\^&*()\-_=\+\[\]\{\}\|;:'.,<>/?\\`~]
 
 Whitespace "Whitespace"
   = [ \t]
