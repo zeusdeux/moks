@@ -76,18 +76,18 @@ function assignmentExpressionHandler(node, scope) {
 
     d('assignmentExpressionHandler -> BlockAssignment');
 
-    let newScope  = createScope({}, scope); // block creates new scope
-
-    // add block params to new scope for that block
-    newScope.__params__ = params;
     d('fn name:');
     d(fnName);
     d('params:');
     d(params);
     setInScope(scope, fnName, function(...args) {
+      let newScope  = createScope({}, scope); // block creates new scope so new function always executes in new scope
       let result;
 
-      d('blockassignment fn');
+      // add block params to new scope for the block
+      newScope.__params__ = params;
+
+      d('BlockAssignment fn');
       d(args);
       d(newScope);
 
