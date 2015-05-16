@@ -2,7 +2,6 @@
 'use strict';
 
 const assert      = require('assert');
-const cu          = require('auto-curry');
 const d           = require('./util').log;
 const setInScope  = require('./scope').setInScope;
 const findInScope = require('./scope').findInScope;
