@@ -5,14 +5,14 @@ Sample program in `moks`:
 
 ```moks
 let fib n = {
-  (n == 0 || n == 1)? {
-     1
+  ((n == 0) || (n == 1))? {
+    1
   } : {
-     fib (n-1) + fib (n-2)
+    fib (n-1) + fib (n-2)
   }
 }
 
-print (fib 10)
+print (fib 10) // should be 89
 
 ```
 
@@ -20,6 +20,7 @@ Things/features I plan to experiment with in the future:
 
 
 - FFI to Javascript
+- support arrays & maps
 - module system
 - error handling
 - marking side effects syntactically
