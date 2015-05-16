@@ -105,7 +105,7 @@ function assignmentExpressionHandler(node, scope) {
       result = traverse(blockNode, newScope);
 
       d(result);
-      d('/blockassignment fn');
+      d('/BlockAssignment fn');
 
       return result;
     });
