@@ -187,10 +187,18 @@ CommentExpression "CommentExpression"
 
 CommentContent = !ExpressionTerminator comment:.                                                       { return comment }
 
+ImportExpression "ImportExpression"
+  = Whitespace* "import" Whitespace+ moduleName:String asId:ImportAsExpression?                        { if (asId) return node("ImportExpression", [moduleName, asId]);
+                                                                                                         else return node("ImportExpression", moduleName) }
+
+ImportAsExpression "ImportAsExpression"
+  = Whitespace+ "as" Whitespace+ id:Identifier                                                         { return id }
+
 Expression "Expression"
   = AssignmentExpression
   / opExpr:OperatorExpression                                                                          { return opExpr }
   / invExpr:InvocationExpression                                                                       { return invExpr }
+  / importExpr:ImportExpression                                                                        { return importExpr }
   / atom:Atom                                                                                          { return atom }
   / "(" Whitespace* expr:Expression Whitespace* ")"                                                    { return expr }
 
