@@ -4,7 +4,7 @@ let fs = require('fs');
 let path = require('path');
 let parse = require('./parser');
 let d = require('./util').log;
-let pgm = fs.readFileSync(path.resolve(__dirname, '../test/cowsays.mok'), 'utf8');
+let pgm = fs.readFileSync(path.resolve(__dirname, '../test/fib.mok'), 'utf8');
 let interpret = require('./interpreter');
 let inputs2 = [
   'a&&b',
@@ -54,12 +54,12 @@ let inputs = [
   'let a b c = { print b c; }\na (10) 20\n',
   'let forever = { forever; }; forever;',
   '(10);',
-  '({10;})\n',
-  '(a b {print a; print b;});',
-  '(a { print a; }) 20\n',
-  '(a {\n print a\n})\n',
-  'let a = (x y {\nprint x\nprint y\n})\n',
-  'map (v { print v; }) 20\n',
+  '(\\{10;})\n',
+  '(\\ a b {print a; print b;})\n',
+  '(\\ a { print a; }) 20\n',
+  '(\\ a {\n print a\n})\n',
+  'let a = (\\ x y {\nprint x\nprint y\n})\n',
+  'map (\\ v { print v; }) 20\n',
   'print (fib 10);',
   'print (fib 10) 10 b c;',
   'if true {\n\tdosomething a\n} {\n\tlet t = 10\n\tdosomeotherthing t\n}\n',
@@ -106,6 +106,8 @@ let inputs = [
   '((fib 10) > 20) ? true : (fib 40 > 10) ? false : true\n',
   'if true { print "10"; } { print "1"; }\n',
   pgm,
+  'import "stdlib"\n',
+  'import "boop123" as boop123\n'
 ];
 
 inputs.map(function(input) {

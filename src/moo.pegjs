@@ -165,8 +165,8 @@ Arguments
   = Whitespace+ arg:Argument                                                                           { return arg }
 
 LambdaExpression "LambdaExpression"
-  = "(" Whitespace* block:Block Whitespace* ")"                                                        { return node("LambdaExpression", [block]) }
-  / "(" Whitespace* ids:Identifiers* Whitespace* block:Block Whitespace* ")"                           { return node("LambdaExpression", [ids, block]) }
+  = "(\\" ids:Identifiers* Whitespace* block:Block Whitespace* ")"                                     { return node("LambdaExpression", [ids, block]) }
+  / "(\\" Whitespace* block:Block Whitespace* ")"                                                      { return node("LambdaExpression", [block]) }
 
 OperatorExpression "OperatorExpression"
   = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("BinaryOperatorExpression", [arg1].concat(rest[0])) }
