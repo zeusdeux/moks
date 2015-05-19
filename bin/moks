@@ -1,20 +1,22 @@
 #! /usr/bin/env node --harmony_arrow_functions --harmony_rest_parameters
 
-var fs        = require('fs');
-var scope     = require('../src/scope');
-var stdlib    = require('../src/stdlib');
-var parse     = require('../src/parser');
-var interpret = require('../src/interpreter');
-var args      = require('minimist')(process.argv.slice(2));
+'use strict';
+
+let fs        = require('fs');
+let scope     = require('../src/scope');
+let stdlib    = require('../src/stdlib');
+let parse     = require('../src/parser');
+let interpret = require('../src/interpreter');
+let args      = require('minimist')(process.argv.slice(2));
 
 if (args.e || args.E) {
-  interpret(
+  return interpret(
     parse(args.e || args.E),
     scope.createScope(stdlib, {})
   );
 }
 else {
-  interpret(
+  return interpret(
     parse(fs.readFileSync(args._[0], {encoding: 'utf-8'})),
     scope.createScope(stdlib, {})
   );
