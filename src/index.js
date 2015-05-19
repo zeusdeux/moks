@@ -111,7 +111,10 @@ let inputs = [
   'if true { print "10"; } { print "1"; }\n',
   pgm,
   'import "stdlib"\n',
-  'import "boop123" as boop123\n'
+  'import "boop123" as boop123\n',
+  'export let fib n = {\n  print 1;\n}\n',
+  'export default let a = 10;',
+  'export let b = "dude"\n'
 ];
 
 inputs.map(function(input) {
