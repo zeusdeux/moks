@@ -18,6 +18,10 @@ let inputs2 = [
 //console.log('let a = {10; 20;}\nlet b = "omgwtfbbq"\nlet c = true');
 //let parsed = pegParse('let a = {10; 20;}\nlet b = "omgwtfbbq";let c = true');
 let inputs = [
+  'as;',
+  'asd.asdad\n',
+  'Math.round\n',
+  'app.test.assert\n',
   '_123;',
   '_123\n',
   '"as\dasd \t\'asdad\'\n"\n',
