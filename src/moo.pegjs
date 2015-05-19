@@ -93,7 +93,6 @@ ReservedWord "ReservedWord"
 FutureKeyword "FutureKeyword"
   = "export"
   / "import"
-  / "as"
   / "default"
 
 Integer "Integer"
@@ -197,11 +196,19 @@ ImportExpression "ImportExpression"
 ImportAsExpression "ImportAsExpression"
   = Whitespace+ "as" Whitespace+ id:Identifier                                                         { return id }
 
+ExportExpression "ExportExpression"
+  = Whitespace* "export" Whitespace+ def:ExportDefault? assignmentExpr:AssignmentExpression            { if (def) return node("DefaultExportExpression", assignmentExpr);
+                                                                                                         else return node("SimpleExportExpression", assignmentExpr) }
+
+ExportDefault "ExportDefault"
+  = def:"default"? Whitespace+                                                                         { return !!def }
+
 Expression "Expression"
   = AssignmentExpression
   / opExpr:OperatorExpression                                                                          { return opExpr }
   / invExpr:InvocationExpression                                                                       { return invExpr }
   / importExpr:ImportExpression                                                                        { return importExpr }
+  / exportExpr:ExportExpression                                                                        { return exportExpr }
   / atom:Atom                                                                                          { return atom }
   / "(" Whitespace* expr:Expression Whitespace* ")"                                                    { return expr }
 
