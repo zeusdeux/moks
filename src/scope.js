@@ -1,7 +1,9 @@
+'use strict';
+
 const d = require('./util').log;
 
 
-exports.createScope = function(obj, parentScope) {
+function createScope(obj, parentScope) {
   d('Creating new scope...');
   d(obj);
   d(parentScope);
@@ -9,20 +11,36 @@ exports.createScope = function(obj, parentScope) {
 
   obj = obj || {};
   return (obj.__parent__ = parentScope) && obj;
-};
+}
 
-exports.findInScope = function findInScope(scope, identifier) {
+function findInScope(scope, identifier, fullIdentifier, parent) {
+  let idSplit = identifier.split('.');
+  let temp = idSplit.shift();
+
+  // hold full original identifier for use during look up in parent
+  // if it's already initialized (which happens only on the first call), leave it be
+  fullIdentifier = fullIdentifier || identifier;
+
+  // storing parent scope since a child node might not have a __parent__ property
+  // so we memoize the parent a level above and use that in the recursive calls
+  // so that we can come out of the child object and resume checking up the parents
+  parent = scope.__parent__ || parent;
+
   d('findInScope:');
   d(scope);
-  d(identifier);
+  d(temp);
+  d(idSplit);
   d('/findInScope');
 
-  if (0 === Object.keys(scope).length) throw new ReferenceError(identifier + ' is not defined');
-  if (scope.hasOwnProperty(identifier)) return scope[identifier];
-  return findInScope(scope.__parent__, identifier);
-};
+  if (0 === Object.keys(scope).length) throw new ReferenceError(fullIdentifier + ' is not defined');
 
-exports.setInScope = function (scope, identifier, value) {
+  if (idSplit.length && scope.hasOwnProperty(temp)) return findInScope(scope[temp], idSplit.join('.'), fullIdentifier, parent);
+
+  if (!idSplit.length && scope.hasOwnProperty(temp)) return scope[temp];
+  return findInScope(scope.__parent__ || parent, fullIdentifier, fullIdentifier, parent);
+}
+
+function setInScope(scope, identifier, value) {
   d('SetInScope');
   d(identifier);
   d(value.toString());
@@ -31,4 +49,10 @@ exports.setInScope = function (scope, identifier, value) {
 
   scope[identifier] = value;
   return true;
+}
+
+module.exports = {
+  setInScope: setInScope,
+  createScope: createScope,
+  findInScope: findInScope
 };
