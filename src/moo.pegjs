@@ -114,7 +114,10 @@ Number "Number"
   / int:Integer                                                                                        { return node("Number", int) }
 
 Identifier "Identifier"
-  = !ReservedWord first:("_" / Alphabet)rest:("_" / Alphabet / Digit)*                                 { return node("Identifier", first+rest.join("")) }
+  = !ReservedWord first:("_" / Alphabet)rest:IdentifierTail*                                           { return node("Identifier", first+rest.join("")) }
+
+IdentifierTail "IdentifierTail"
+  = dot:"."? rest:("_" / Alphabet / Digit)                                                             { if (dot) return dot+rest; else return rest; }
 
 Identifiers "Identifiers"
   = Whitespace+ id:Identifier                                                                          { return id }
