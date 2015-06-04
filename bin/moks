@@ -10,13 +10,13 @@ let interpret = require('../src/interpreter');
 let args      = require('minimist')(process.argv.slice(2));
 
 if (args.e || args.E) {
-  return interpret(
+  interpret(
     parse(args.e || args.E),
     scope.createScope(stdlib, {})
   );
 }
 else {
-  return interpret(
+  interpret(
     parse(fs.readFileSync(args._[0], {encoding: 'utf-8'})),
     scope.createScope(stdlib, {})
   );
