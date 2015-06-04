@@ -1,0 +1,8 @@
+let add n = {
+  let id = {
+    let a = 200
+    a
+  }
+  a + id
+}
+print (add 10) // 12 + id 10 = 22
