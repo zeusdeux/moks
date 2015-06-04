@@ -37,9 +37,19 @@ function atomsHandler(atom, scope) {
       return atom.val;
     case 'Identifier':
       return findInScope(scope, atom.val);
+    case 'Array':
+      return atom.val.map(v => v.val);
+    case 'HashMap':
+      return atom.val.reduce((p, c) => {
+        assert(c[0].type === 'Key', 'Invalid key given to hash map');
+        let key = c[0].val;
+        let val = c[1].val;
+
+        p[key] = val;
+        return p;
+      }, {});
   }
 }
-
 
 // assignmentExpressionHandler :: Node -> Scope -> undefined
 function assignmentExpressionHandler(node, scope) {
@@ -48,8 +58,10 @@ function assignmentExpressionHandler(node, scope) {
 
     // since this is an atom assignment, we know that traversal will hit
     // atomsHandler which just returns a simple value (an atom value) or
+
     // a function (if the atom it received was an identifer)
     let traversalResult = traverse(node.val[1], scope);
+    let thunk;
 
     // everything is a function
     // so even atoms are converted into functions that return the atom
@@ -58,7 +70,7 @@ function assignmentExpressionHandler(node, scope) {
     // when we do something like let a = 10; let b = a;
     // then findInScope(scope, a) will return the thunk for 'a'
     // so we needn't wrap it again hence the check below
-    if ('function' !== typeof traversalResult) traversalResult = new Function('', 'return ' + traversalResult + ';');
+    if ('function' !== typeof traversalResult) thunk = function () { return traversalResult; };
 
     // d('Traversal result:');
     // d('identifier:');
@@ -66,7 +78,7 @@ function assignmentExpressionHandler(node, scope) {
     // d(traversalResult.toString());
     // d('------------------------------');
 
-    setInScope(scope, node.val[0].val, traversalResult);
+    setInScope(scope, node.val[0].val, thunk || traversalResult);
   }
   else if ('BlockAssignment' === node.type) {
     let blockNode = node.val[1];
