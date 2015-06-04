@@ -10,7 +10,10 @@ function createScope(obj, parentScope) {
   d('/createScope');
 
   obj = obj || {};
-  return (obj.__parent__ = parentScope) && obj;
+  Object.defineProperty(obj, '__parent__', {
+    value: parentScope
+  });
+  return obj;
 }
 
 function findInScope(scope, identifier, fullIdentifier, parent) {
