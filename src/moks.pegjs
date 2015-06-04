@@ -121,11 +121,26 @@ IdentifierTail "IdentifierTail"
 Identifiers "Identifiers"
   = Whitespace+ id:Identifier                                                                          { return id }
 
+Array "Array"
+  = Whitespace* "[" WhitespaceOrLineTerminator* atoms:Atoms* WhitespaceOrLineTerminator* "]"           { return node("Array", atoms) }
+  / Whitespace* "[" WhitespaceOrLineTerminator* atom:Atom WhitespaceOrLineTerminator* "]"              { return node("Array", [atom]) }
+
+HashMap "HashMap"
+  = Whitespace* "{" WhitespaceOrLineTerminator* keyVal:KeyVal*  WhitespaceOrLineTerminator* "}"        { return node("HashMap", keyVal) }
+
+KeyVal "KeyVal"
+  = ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator+               { return [node("Key", key.join("")), val] }
+
 Atom "Atom"
   = Number
   / Boolean
   / String
+  / Array
+  / HashMap
   / Identifier
+
+Atoms "Atoms"
+  = atom:Atom WhitespaceOrLineTerminator+                                                              { return atom }
 
 Block "Block"
   = "{" WhitespaceOrLineTerminator* exprs:Expressions* WhitespaceOrLineTerminator* "}"                 { return node("Block", exprs) }
@@ -191,7 +206,7 @@ CommentContent = !ExpressionTerminator comment:.                                
 
 ImportExpression "ImportExpression"
   = Whitespace* "import" Whitespace+ moduleName:String asId:ImportAsExpression?                        { if (asId) return node("ImportExpression", [moduleName, asId]);
-                                                                                                         else return node("ImportExpression", moduleName) }
+                                                                                                         else return node("ImportExpression", [moduleName]) }
 
 ImportAsExpression "ImportAsExpression"
   = Whitespace+ "as" Whitespace+ id:Identifier                                                         { return id }
