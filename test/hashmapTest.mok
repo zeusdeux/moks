@@ -1,0 +1,7 @@
+let a = {
+  :key1 "dude"
+  :key2 100
+}
+let b = { :g 20 }
+print a
+print b
