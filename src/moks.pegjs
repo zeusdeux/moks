@@ -123,10 +123,13 @@ Identifiers "Identifiers"
 
 Array "Array"
   = Whitespace* "[" WhitespaceOrLineTerminator* atoms:Atoms* WhitespaceOrLineTerminator* "]"           { return node("Array", atoms) }
-  / Whitespace* "[" WhitespaceOrLineTerminator* atom:Atom WhitespaceOrLineTerminator* "]"              { return node("Array", [atom]) }
+  / Whitespace* "[" WhitespaceOrLineTerminator*
+    atoms:Atoms* lastAtom:Atom WhitespaceOrLineTerminator* "]"                                         { return node("Array", atoms.push(lastAtom) && atoms) }
 
 HashMap "HashMap"
   = Whitespace* "{" WhitespaceOrLineTerminator* keyVal:KeyVal*  WhitespaceOrLineTerminator* "}"        { return node("HashMap", keyVal) }
+  / Whitespace* "{" WhitespaceOrLineTerminator* keyVal:KeyVal*
+    ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator* "}"           { return node("HashMap", keyVal.push([node("Key", key.join("")), val]) && keyVal) }
 
 KeyVal "KeyVal"
   = ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator+               { return [node("Key", key.join("")), val] }
