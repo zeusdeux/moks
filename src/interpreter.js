@@ -1,18 +1,28 @@
-/* eslint no-new-func:0, no-use-before-define: 0 */
+/* no-use-before-define: 0 */
 'use strict';
 
+const fs          = require('fs');
+let p             = require('path');
 const assert      = require('assert');
+const parse       = require('./parser');
+const stdlib      = require('./stdlib');
 const d           = require('./util').log;
 const setInScope  = require('./scope').setInScope;
 const findInScope = require('./scope').findInScope;
 const createScope = require('./scope').createScope;
-const atoms       = ['Number', 'Boolean', 'String', 'Identifier'];
+const atoms       = ['Number', 'Boolean', 'String', 'Identifier', 'Array', 'HashMap'];
 const ops         = [
   'DivisionOperator', 'MultiplicationOperator', 'AdditionOperator', 'SubtractionOperator',
   'AndOperator', 'OrOperator', 'EqualityOperator', 'InequalityOperator', 'LTEOperator',
   'GTEOperator', 'LTOperator', 'GTOperator', 'NegationOperator', 'UnaryOperator'
 ];
 
+// adding isRelative to imported path module
+// type Path = String
+// isRelative :: Path -> Bool
+p.isRelative = function(path) {
+  return path[0] === '.';
+};
 
 // isAtom :: Node -> Bool
 function isAtom(node) {
@@ -254,7 +264,7 @@ function ternaryOperatorExpressionHandler(node, scope) {
 
 // unaryOperatorExpressionHandler :: Node -> Scope -> a
 function unaryOperatorExpressionHandler(node, scope) {
-  let op = node[0].type;
+  let op    = node[0].type;
   let param = traverse(node[1], scope);
   let result;
 
