@@ -70,7 +70,13 @@ function assignmentExpressionHandler(node, scope) {
     // when we do something like let a = 10; let b = a;
     // then findInScope(scope, a) will return the thunk for 'a'
     // so we needn't wrap it again hence the check below
-    if ('function' !== typeof traversalResult) thunk = function () { return traversalResult; };
+    // Note: Arrays and objects aren't stored as thunks so that it's easier to deref them
+    if (
+      'function' !== typeof traversalResult &&
+      !Array.isArray(traversalResult) &&
+      'object' !== typeof traversalResult &&
+      null !== traversalResult
+    ) thunk = function () { return traversalResult; };
 
     // d('Traversal result:');
     // d('identifier:');
