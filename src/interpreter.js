@@ -38,12 +38,12 @@ function atomsHandler(atom, scope) {
     case 'Identifier':
       return findInScope(scope, atom.val);
     case 'Array':
-      return atom.val.map(v => v.val);
+      return atom.val.map(v => traverse(v, scope));
     case 'HashMap':
       return atom.val.reduce((p, c) => {
         assert(c[0].type === 'Key', 'Invalid key given to hash map');
         let key = c[0].val;
-        let val = c[1].val;
+        let val = traverse(c[1], scope);
 
         p[key] = val;
         return p;
