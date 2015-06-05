@@ -2,6 +2,26 @@ let a = {
   :key1 "dude"
   :key2 100
 }
-let b = { :g 20 }
-print a
-print b
+let b = { :b 20 }
+let c = {:c 10}
+let d = {:d 20
+        }
+let e = {
+  :e "dude"
+}
+
+let f = {
+  :l1 {
+    :dude 900
+    :mate {
+      :nope "denied"
+    }
+  }
+}
+
+print a b c d e
+print a.key1
+print f
+print f.l1
+print f.l1.dude f.l1.mate
+print f.l1.mate.nope

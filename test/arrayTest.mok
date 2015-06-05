@@ -5,8 +5,23 @@ let b = [
   3
   4
 ]
+let c = [1 2 3 4]
+let d = [1]
+let e = [ "e" ]
+let f = [
+  "f"
+]
+let g = ["g"
+        ]
+let h = ["mate" [1 2 3] [{:a 20 :b [1 2 3 4 5]}]]
 print (push a 10)
 print b
+print c
+print d e f g
+print h
+print h.0
+print h.1 h.1.0 h.1.1 h.1.2
+print h.2.0 h.2.0.a h.2.0.b h.2.0.b.1
 // [ 1 2 3 4 ]
 // [
 //   1
