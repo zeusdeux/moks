@@ -1,11 +1,11 @@
-/* no-use-before-define: 0 */
+/* eslint no-use-before-define: 0 */
 'use strict';
 
 const fs          = require('fs');
 let p             = require('path');
 const assert      = require('assert');
 const parse       = require('./parser');
-const stdlib      = require('./stdlib');
+const stdlib      = require('./lib/stdlib');
 const d           = require('./util').log;
 const setInScope  = require('./scope').setInScope;
 const findInScope = require('./scope').findInScope;
@@ -16,6 +16,7 @@ const ops         = [
   'AndOperator', 'OrOperator', 'EqualityOperator', 'InequalityOperator', 'LTEOperator',
   'GTEOperator', 'LTOperator', 'GTOperator', 'NegationOperator', 'UnaryOperator'
 ];
+let __loadedModules__ = {};
 
 // adding isRelative to imported path module
 // type Path = String
@@ -277,6 +278,74 @@ function unaryOperatorExpressionHandler(node, scope) {
   return result;
 }
 
+// importModuleIntoScope :: Object -> Scope -> ()
+function importModuleIntoScope(module, scope) {
+  Object.keys(module).forEach(function(k) {
+    setInScope(scope, k, module[k]);
+  });
+}
+
+// importModuleIntoScopeAs :: Identifier -> Object -> Scope -> ()
+function importModuleIntoScopeAs(id, module, scope) {
+  importModuleIntoScope({id: module}, scope);
+}
+
+// importMok :: Path -> Object
+function importMok(path) {
+  let scope = createScope(stdlib, {});
+
+  traverse(parse(fs.readFileSync(path, {encoding: 'utf-8'})), scope);
+  return scope;
+}
+
+// importJS :: Path -> Object
+function importJS(path) {
+  return require(path);
+}
+
+/*
+import algorithm:
+
+0. Is path already in global `__loadedModules__`? if yes 6 else 1
+1. Is path absolute or relative? if yes 2 else 7
+2. Does path have extension? if yes 3 else 4
+3. Call loader based on extension (require for .js etc, and mokLoader for .mok) and store in global `__loadedModules__` keyed by path and goto step 6
+4. If path doesn't have an extension, try importing it as a mok file. If that fails step 5 else store in global `__loadedModules__` map keyed by path and goto step 6
+5. Try importing using require. If that fails END WITH ERROR else store in global `__loadedModules__` map keyed by path and goto step 6
+6. Link from `__loadedModules__` into scope for executing program and END WITH SUCCESS
+7. Prepend path to moks core library to the name and goto step 2
+*/
+// importExpressionHandler :: Node -> Scope -> ()
+function importExpressionHandler(node, scope) {
+  assert(node[0].type === 'String' && node[1].type === 'Identifier', 'import statement needs a string path and an optional identifier');
+
+  let modulePath = node[0].val;
+  let importAs = node[1].val;
+  let module;
+
+  if (p.isAbsolute(modulePath) || p.isRelative(modulePath)) {
+    let parsedPath;
+
+    parsedPath = p.parse(modulePath);
+    // if no extenstion, try .mok then .js
+    if (!parsedPath.ext) {
+      try {
+        module = importMok(modulePath + '.mok');
+      }
+      catch (e) {
+        module = importJS(modulePath);
+      }
+      if (importAs) importModuleIntoScopeAs(importAs, module, scope);
+      else importModuleIntoScope(module, scope);
+    }
+  }
+}
+
+// exportExpressionHandler :: Node -> Scope -> ()
+function exportExpressionHandler(node, scope) {
+
+}
+
 // traverse :: Node -> Scope -> undefined
 function traverse(root, scope) {
   // d(root.type);
@@ -291,6 +360,10 @@ function traverse(root, scope) {
   else if ('TernaryOperatorExpression' === root.type) return ternaryOperatorExpressionHandler(root.val, scope);
 
   else if ('UnaryOperatorExpression' === root.type) return unaryOperatorExpressionHandler(root.val, scope);
+
+  // else if ('ImportExpression' === root.type) return importExpressionHandler(root.val, scope);
+
+  // else if ('ExportExpression' === root.type) return exportExpressionHandler(root.val, scope);
 
   else if (isAtom(root)) return atomsHandler(root, scope);
 

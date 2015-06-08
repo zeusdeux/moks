@@ -1,23 +1,12 @@
 'use strict';
 
-let fs = require('fs');
-let path = require('path');
-let parse = require('./parser');
-let d = require('./util').log;
-let pgm = fs.readFileSync(path.resolve(__dirname, '../test/fib.mok'), 'utf8');
+let fs        = require('fs');
+let path      = require('path');
+let parse     = require('./parser');
+let d         = require('./util').log;
 let interpret = require('./interpreter');
-let inputs2 = [
-  'a&&b',
-  'a&&b&&c',
-  'a&&(b&&c)',
-  '(a)&&(c)',
-  '[a]&&c'
-];
-
-// let a = !{ print a } -> unsafe block since io
-//console.log('let a = {10; 20;}\nlet b = "omgwtfbbq"\nlet c = true');
-//let parsed = pegParse('let a = {10; 20;}\nlet b = "omgwtfbbq";let c = true');
-let inputs = [
+let pgm       = fs.readFileSync(path.resolve(__dirname, '../../test/fib.mok'), 'utf8');
+let inputs    = [
   'as;',
   'asd.asdad\n',
   'Math.round\n',
