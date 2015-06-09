@@ -109,7 +109,7 @@ let inputs    = [
   '[\n  1\n  2\n];',
   '{:a 1};',
   '{:a 1 :b 20};',
-  '{\n  :a 1\n  :b 20\n}'
+  '{\n  :a 1\n  :b 20\n};'
 ];
 
 inputs.map(function(input) {
