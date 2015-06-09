@@ -39,9 +39,10 @@ moks -e "let add x y = {  x + y; }; print (add 2 3);"
 
 Things/features I plan to experiment with in the future:
 
-- FFI to Javascript
-- support arrays & maps
-- module system
+- ~~FFI to Javascript~~
+- ~~support arrays & maps~~
+- ~~module system~~
+- lamda support
 - error handling
 - marking side effects syntactically
 - runtime optimizations
