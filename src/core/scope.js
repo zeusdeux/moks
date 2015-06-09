@@ -1,18 +1,21 @@
 'use strict';
 
 const d = require('./util').log;
-
+const clone = require('clone');
 
 function createScope(obj, parentScope) {
   d('Creating new scope...');
   d(obj);
   d(parentScope);
-  d('/createScope');
 
-  obj = obj || {};
+
+  obj = clone(obj) || {};
   Object.defineProperty(obj, '__parent__', {
     value: parentScope
   });
+  d('new obj __parent__');
+  d(obj.__parent__);
+  d('/createScope');
   return obj;
 }
 
