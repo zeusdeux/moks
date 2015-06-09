@@ -43,6 +43,7 @@ Things/features I plan to experiment with in the future:
 - ~~support arrays & maps~~
 - ~~module system~~
 - lamda support
+- repl
 - error handling
 - marking side effects syntactically
 - runtime optimizations
