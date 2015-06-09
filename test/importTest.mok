@@ -1,0 +1,24 @@
+import "./add" as A
+import "./fibExport" as F
+import "./exportStuff" as E
+import "./exportMore" as E2
+import "./dynamicScopingExportTest" as D
+import "./imports/boop" as B
+import "math" as M
+import "path" as P
+// import "./aksljdalkd" as dude
+
+print "Add 10 20: %d" (A.add 10 20)
+print "Fib of 10: %d " (F.fib 10)
+print "Exported function E (multiply) 3 200: %d" (E 3 200)
+print "Calling exported function E2.test with 'what': %s" (E2.test "what")
+print E2.data
+print (A.add E2.data.a E2.data.b)
+
+
+let a = "dude wtf"
+D.printA //should print value of 'a' from dynamicScopingExportTest.mok file
+
+print (M.round 12.34)
+print (P.resolve "/test/dude/what" "../../")
+print (B.printM)

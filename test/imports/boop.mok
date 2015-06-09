@@ -1,0 +1,5 @@
+let m = "In boop"
+
+let printM = {
+  print m
+}
