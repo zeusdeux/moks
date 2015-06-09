@@ -19,6 +19,8 @@ Either semicolons *OR* newlines terminate lines. Do not use both or my parser wi
 
 ## Play with it
 
+> Note: `moks` needs iojs currently since it uses features from v8 that node doesn't have yet
+
 ```javascript
 npm i -g moks
 ```
