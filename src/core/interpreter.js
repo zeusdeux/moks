@@ -16,13 +16,13 @@ const ops         = [
   'AndOperator', 'OrOperator', 'EqualityOperator', 'InequalityOperator', 'LTEOperator',
   'GTEOperator', 'LTOperator', 'GTOperator', 'NegationOperator', 'UnaryOperator'
 ];
-let __loadedModules__ = {};
+let __loadedModules__ = createScope({}, {});
 
 // adding isRelative to imported path module
 // type Path = String
 // isRelative :: Path -> Bool
 p.isRelative = function(path) {
-  return path[0] === '.';
+  return path[0] === '.' && (path[1] === '/' || (path[1] === '.' && path[2] === '/'));
 };
 
 // isAtom :: Node -> Bool
@@ -278,29 +278,40 @@ function unaryOperatorExpressionHandler(node, scope) {
   return result;
 }
 
-// importModuleIntoScope :: Object -> Scope -> ()
-function importModuleIntoScope(module, scope) {
-  Object.keys(module).forEach(function(k) {
-    setInScope(scope, k, module[k]);
-  });
+function makeIntoPaths(paths, root) {
+  d('makeIntoPaths:');
+  d(arguments);
+
+  let result = paths.map(path => {
+    if (p.isAbsolute(path) || p.isRelative(path)) return p.resolve(root, path);
+    return p.join(__dirname, 'lib', path);
+  }).concat([p.parse(paths[0]).name]);
+
+  d(result);
+  d('/makeIntoPaths');
+
+  return result;
 }
 
-// importModuleIntoScopeAs :: Identifier -> Object -> Scope -> ()
-function importModuleIntoScopeAs(id, module, scope) {
-  importModuleIntoScope({id: module}, scope);
+function setupExtensions(path) {
+  let parsedPath = p.parse(path);
+
+  if (!parsedPath.ext || parsedPath.ext === '.') {
+    path = path[path.length - 1] === '.'? path.slice(0, -1) : path;
+    return [path+'.mok', path+'.js'];
+  }
+  return [path];
 }
 
-// importMok :: Path -> Object
-function importMok(path) {
-  let scope = createScope(stdlib, {});
-
-  traverse(parse(fs.readFileSync(path, {encoding: 'utf-8'})), scope);
-  return scope;
-}
-
-// importJS :: Path -> Object
-function importJS(path) {
-  return require(path);
+function linkFromLoadedModulesToScope(currScope, moduleName, importAs) {
+  d('linkFromLoadedModulesToScope');
+  if (!importAs) {
+    setInScope(currScope, '__loadedModules__', __loadedModules__[moduleName]);
+  }
+  else {
+    setInScope(currScope, importAs, __loadedModules__[moduleName]);
+  }
+  d('/linkFromLoadedModulesToScope');
 }
 
 /*
@@ -317,38 +328,107 @@ import algorithm:
 */
 // importExpressionHandler :: Node -> Scope -> ()
 function importExpressionHandler(node, scope) {
-  assert(node[0].type === 'String' && node[1].type === 'Identifier', 'import statement needs a string path and an optional identifier');
+  assert(node[0].type === 'String', 'import statement needs a string path');
+  if (node[1]) assert(node[1].type === 'Identifier', 'import statement requires an identifier after "as"');
 
-  let modulePath = node[0].val;
+  let module   = node[0].val;
   let importAs = node[1].val;
-  let module;
+  let root = findInScope(scope, '__filepath__');
 
-  if (p.isAbsolute(modulePath) || p.isRelative(modulePath)) {
-    let parsedPath;
-
-    parsedPath = p.parse(modulePath);
-    // if no extenstion, try .mok then .js
-    if (!parsedPath.ext) {
+  d('importExpressionHandler');
+  d('Module:');
+  d(module);
+  d('importAs:');
+  d(importAs);
+  d('root:');
+  d(root);
+  if (module in __loadedModules__) linkFromLoadedModulesToScope(scope, module, importAs);
+  else {
+    // d('setup extensions');
+    // d(setupExtensions(module));
+    // d('make into paths');
+    // d(makeIntoPaths(setupExtensions(module), root));
+    // get the first path that exists (.mok path come first then .js)
+    let modulePaths = makeIntoPaths(setupExtensions(module), root).filter(path => {
       try {
-        module = importMok(modulePath + '.mok');
+        fs.statSync(path);
+        return true;
       }
-      catch (e) {
-        module = importJS(modulePath);
+      catch (_) {
+        try {
+          require(path);
+          return true;
+        }
+        catch (_) {
+          return false;
+        }
       }
-      if (importAs) importModuleIntoScopeAs(importAs, module, scope);
-      else importModuleIntoScope(module, scope);
+    });
+
+    d('Filtered module paths');
+    d(modulePaths);
+
+    if (!modulePaths.length) throw new ReferenceError(module + ' does not exist in your file system');
+    let parsedPath = p.parse(modulePaths[0]);
+
+    switch(parsedPath.ext) {
+      case '.mok':
+        setLoadedModules(module, loadMoksModule(modulePaths[0], root));
+        break;
+      default:
+        setLoadedModules(module, loadJSModule(modulePaths[0]));
+        break;
     }
+    linkFromLoadedModulesToScope(scope, module, importAs);
   }
 }
 
-// exportExpressionHandler :: Node -> Scope -> ()
-function exportExpressionHandler(node, scope) {
-
+function setLoadedModules(moduleName, scope) {
+  d('setLoadedModules');
+  d(arguments);
+  __loadedModules__[moduleName] = scope;
+  d('__loadedModules__');
+  d(__loadedModules__);
+  d('/setLoadedModules');
 }
+
+function loadJSModule(moduleName) {
+  let module = require(moduleName);
+
+  d('loadJSModule');
+  d(module);
+  d('/loadJSModule');
+
+  return module;
+}
+
+function loadMoksModule(path, root) {
+  path = p.resolve(root, path);
+  const pgm = parse(fs.readFileSync(path, 'utf8'));
+  let newScope = createScope(stdlib, { __filepath__: p.dirname(path) });
+
+  d('loadMoksModule');
+  d(newScope);
+  d(pgm);
+  d(p.dirname(path));
+
+  traverse(pgm, newScope);
+
+  d('newScope');
+  d(newScope);
+  d('/loadMoksModule');
+
+  return newScope;
+}
+
+// exportExpressionHandler :: Node -> Scope -> ()
+// function exportExpressionHandler(node, scope) {
+
+// }
 
 // traverse :: Node -> Scope -> undefined
 function traverse(root, scope) {
-  // d(root.type);
+  d(root.type);
   let result;
 
   if ('AssignmentExpression' === root.type) return assignmentExpressionHandler(root.val, scope);
@@ -361,7 +441,7 @@ function traverse(root, scope) {
 
   else if ('UnaryOperatorExpression' === root.type) return unaryOperatorExpressionHandler(root.val, scope);
 
-  // else if ('ImportExpression' === root.type) return importExpressionHandler(root.val, scope);
+  else if ('ImportExpression' === root.type) return importExpressionHandler(root.val, scope);
 
   // else if ('ExportExpression' === root.type) return exportExpressionHandler(root.val, scope);
 
