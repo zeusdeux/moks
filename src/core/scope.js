@@ -42,18 +42,25 @@ function findInScope(scope, identifier, fullIdentifier, parent) {
 
   if (idSplit.length && scope.hasOwnProperty(temp)) return findInScope(scope[temp], idSplit.join('.'), fullIdentifier, parent);
 
-  if (!idSplit.length && scope.hasOwnProperty(temp)) return scope[temp];
+  if (!idSplit.length && scope.hasOwnProperty(temp)) {
+    d('Found item in scope');
+    d(scope[temp]);
+    return scope[temp];
+  }
   return findInScope(scope.__parent__ || parent, fullIdentifier, fullIdentifier, parent);
 }
 
 function setInScope(scope, identifier, value) {
   d('SetInScope');
   d(identifier);
-  d(value.toString());
+  if ('function' === typeof value) d(value.toString());
+  else d(value);
+
+  scope[identifier] = value;
+
   d(scope);
   d('/SetInScope');
 
-  scope[identifier] = value;
   return true;
 }
 
