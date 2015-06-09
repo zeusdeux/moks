@@ -5,7 +5,7 @@ Sample program in `moks`:
 
 ```moks
 let fib n = {
-  ((n == 0) || (n == 1))? {
+  (n < 2)? {
     1
   } : {
     fib (n-1) + fib (n-2)
@@ -13,6 +13,7 @@ let fib n = {
 }
 
 print (fib 10) // should be 89
+print (fib 20) // should be 10946
 
 ```
 Either semicolons *OR* newlines terminate lines. Do not use both or my parser will throw a cryptic error.
