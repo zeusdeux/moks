@@ -207,26 +207,27 @@ CommentExpression "CommentExpression"
 
 CommentContent = !ExpressionTerminator comment:.                                                       { return comment }
 
+// temporarily making "as" required
 ImportExpression "ImportExpression"
-  = Whitespace* "import" Whitespace+ moduleName:String asId:ImportAsExpression?                        { if (asId) return node("ImportExpression", [moduleName, asId]);
+  = Whitespace* "import" Whitespace+ moduleName:String asId:ImportAsExpression                         { if (asId) return node("ImportExpression", [moduleName, asId]);
                                                                                                          else return node("ImportExpression", [moduleName]) }
 
 ImportAsExpression "ImportAsExpression"
   = Whitespace+ "as" Whitespace+ id:Identifier                                                         { return id }
 
-ExportExpression "ExportExpression"
-  = Whitespace* "export" Whitespace+ def:ExportDefault? assignmentExpr:AssignmentExpression            { if (def) return node("DefaultExportExpression", assignmentExpr);
-                                                                                                         else return node("SimpleExportExpression", assignmentExpr) }
+// ExportExpression "ExportExpression"
+//   = Whitespace* "export" Whitespace+ def:ExportDefault? assignmentExpr:AssignmentExpression            { if (def) return node("DefaultExportExpression", assignmentExpr);
+//                                                                                                         else return node("SimpleExportExpression", assignmentExpr) }
 
-ExportDefault "ExportDefault"
-  = def:"default"? Whitespace+                                                                         { return !!def }
+// ExportDefault "ExportDefault"
+//   = def:"default"? Whitespace+                                                                         { return !!def }
 
 Expression "Expression"
   = AssignmentExpression
   / opExpr:OperatorExpression                                                                          { return opExpr }
   / invExpr:InvocationExpression                                                                       { return invExpr }
   / importExpr:ImportExpression                                                                        { return importExpr }
-  / exportExpr:ExportExpression                                                                        { return exportExpr }
+//  / exportExpr:ExportExpression                                                                        { return exportExpr }
   / atom:Atom                                                                                          { return atom }
   / "(" Whitespace* expr:Expression Whitespace* ")"                                                    { return expr }
 
