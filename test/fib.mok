@@ -1,3 +1,5 @@
+import "assert" as assert
+
 let fib n = {
   (n < 2)? {
     1
@@ -6,5 +8,7 @@ let fib n = {
   }
 }
 
+assert ((fib 10) == 89) "shits broken"
+assert ((fib 20) == 10946) "shits broken"
 print (fib 10) // should be 89
 print (fib 20) // should be 10946
