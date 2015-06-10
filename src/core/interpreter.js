@@ -108,35 +108,7 @@ function assignmentExpressionHandler(node, scope) {
     d(fnName);
     d('params:');
     d(params);
-    setInScope(scope, fnName, function(...args) {
-      let newScope  = createScope({}, scope); // block creates new scope so new function always executes in new scope
-      let result;
-
-      // add block params to new scope for the block
-      newScope.__params__ = params;
-
-      d('BlockAssignment fn');
-      d(args);
-      d(newScope);
-
-      newScope = newScope.__params__.reduce((p, c) => {
-        let temp = args.shift();
-
-        p[c] = function() {
-          return temp;
-        };
-        return p;
-      }, newScope);
-
-      d(blockNode);
-      d('Going to traverse');
-      result = traverse(blockNode, newScope);
-
-      d(result);
-      d('/BlockAssignment fn');
-
-      return result;
-    });
+    setInScope(scope, fnName, generateWrapperFnFromBlockAndArgs(params, blockNode, scope));
     d('/assignmentExpressionHandler -> BlockAssignment');
   }
   else if ('OperatorAssignment' === node.type) {
@@ -163,15 +135,18 @@ function argumentsHandler(argsNode, scope) {
 
   return argsNode.val.map(v => {
     let temp = traverse(v, scope);
-
-    if ('function' === typeof temp) temp = temp.apply(null);
+    // d('********');
+    // d(v);
+    // d(temp.toString());
+    // d('********');
+    if ('function' === typeof temp && 'LambdaExpression' !== v.type) temp = temp.apply(null);
     return temp;
   });
 }
 
 // invocationExpressionHandler :: Node -> Scope -> a
 function invocationExpressionHandler(node, scope) {
-  let fn   = atomsHandler(node[0], scope);
+  let fn   = traverse(node[0], scope);
   let args = argumentsHandler(node[1], scope);
   let result;
 
@@ -426,6 +401,46 @@ function loadMoksModule(path, root) {
 
 // }
 
+function lamdaExpressionHandler(node, scope) {
+  d(node);
+  let params = node[0].map(id => id.val);
+  let blockNode = node[1];
+
+  return generateWrapperFnFromBlockAndArgs(params, blockNode, scope);
+}
+
+function generateWrapperFnFromBlockAndArgs(params, blockNode, scope) {
+  return function(...args) {
+    let newScope  = createScope({}, scope); // block creates new scope so new function always executes in new scope
+    let result;
+
+    // add block params to new scope for the block
+    newScope.__params__ = params;
+
+    d('Block to Generated wrapper fn');
+    d(args);
+    d(newScope);
+
+    newScope = newScope.__params__.reduce((p, c) => {
+      let temp = args.shift();
+
+      p[c] = function() {
+        return temp;
+      };
+      return p;
+    }, newScope);
+
+    d(blockNode);
+    d('Going to traverse');
+    result = traverse(blockNode, newScope);
+
+    d(result);
+    d('/Block to generated wrapper fn');
+
+    return result;
+  };
+}
+
 // traverse :: Node -> Scope -> undefined
 function traverse(root, scope) {
   d(root.type);
@@ -442,6 +457,8 @@ function traverse(root, scope) {
   else if ('UnaryOperatorExpression' === root.type) return unaryOperatorExpressionHandler(root.val, scope);
 
   else if ('ImportExpression' === root.type) return importExpressionHandler(root.val, scope);
+
+  else if ('LambdaExpression' === root.type) return lamdaExpressionHandler(root.val, scope);
 
   // else if ('ExportExpression' === root.type) return exportExpressionHandler(root.val, scope);
 
