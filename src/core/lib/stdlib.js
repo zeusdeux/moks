@@ -17,5 +17,13 @@ module.exports = {
   pop: function(list) {
     if (Array.isArray(list)) return list.pop();
     throw new SyntaxError('pop can only be used with arrays');
+  },
+  map: function(fn, list) {
+
+    if('function' === typeof fn) {
+      if (Array.isArray(list)) return list.map(fn);
+      throw new SyntaxError('map needs an array as its second parameter');
+    }
+    else throw new SyntaxError('map needs a function as first parameter');
   }
 };
