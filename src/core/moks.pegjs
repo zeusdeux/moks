@@ -155,9 +155,6 @@ AtomAssignment "AtomAssignment"
 BlockAssignment "BlockAssignment"
   = Whitespace* "let" ids:Identifiers+ Whitespace* "=" Whitespace* block:Block                         { return node("BlockAssignment", [ids, block]) }
 
-LambdaAssignment "LambdaAssignment"
-  = Whitespace* "let" Whitespace+ ids:Identifier Whitespace* "=" Whitespace* lambda:LambdaExpression   { return node("LambdaAssignment", [ids, lambda]) }
-
 OperatorAssignment "OperatorAssignment"
   = Whitespace* "let" Whitespace+ id:Identifier Whitespace* "=" Whitespace* opExpr:OperatorExpression  { return node("OperatorAssignment", [id, opExpr]) }
 
@@ -169,7 +166,6 @@ AssignmentExpression "AssignmentExpression"
   / invocationAssignment:InvocationAssignment                                                          { return node("AssignmentExpression", invocationAssignment) }
   / atomAssignment:AtomAssignment                                                                      { return node("AssignmentExpression", atomAssignment) }
   / blockAssignment:BlockAssignment                                                                    { return node("AssignmentExpression", blockAssignment) }
-  / lambdaAssignment:LambdaAssignment                                                                  { return node("AssignmentExpression", lambdaAssignment) }
 
 InvocationExpression "InvocationExpression"
   = Whitespace* functionId:Identifier args:Arguments*                                                  { return node("InvocationExpression", [functionId, node("Arguments", args)]); }
