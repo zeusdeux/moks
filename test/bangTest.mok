@@ -1,4 +1,8 @@
+import "assert" as assert
+
 let a = !true
+
+assert (a == false) "a should be false"
 
 print a
 print (!false)
