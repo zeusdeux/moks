@@ -1,12 +1,21 @@
-print (true ? 1 : 2)
+import "assert" as assert
+
+assert ((true ? 1 : 2) == 1) "Ternary operator working incorrectly since output should be 1"
+//print (true ? 1 : 2)
 
 let a n = {
   (n < 10)? {
     print "Yeah %d is lesser than 10" n
+    "Smaller"
   } : {
     print "Nope"
     print "Just nope!"
+    "Greater or equal"
   }
 }
 
-a 9
+let result = a 9
+
+assert (result == "Smaller") "Result should be the string 'Smaller'"
+
+print result

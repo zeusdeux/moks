@@ -127,8 +127,9 @@ function assignmentExpressionHandler(node, scope) {
     d(node.val[0].val);
     d(node.val[1]);
     d('/assignmentExpressionHandler -> InvocationAssignment');
+    let result = traverse(node.val[1], scope);
 
-    setInScope(scope, node.val[0].val, () => traverse(node.val[1], scope));
+    setInScope(scope, node.val[0].val, () => result);
   }
 }
 
