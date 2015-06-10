@@ -15,6 +15,8 @@ let fib n = {
 print (fib 10) // should be 89
 print (fib 20) // should be 10946
 
+print (map (\x { x + 1; }) [1 2 3 4]) // should be [2 3 4 5]
+
 ```
 Either semicolons *OR* newlines terminate lines. Do not use both or my parser will throw a cryptic error.
 
@@ -43,7 +45,7 @@ Things/features I plan to experiment with in the future:
 - ~~FFI to Javascript~~
 - ~~support arrays & maps~~
 - ~~module system~~
-- lamda support
+- ~~lamda support~~
 - repl
 - error handling
 - marking side effects syntactically
