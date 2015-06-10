@@ -155,14 +155,14 @@ function invocationExpressionHandler(node, scope) {
   let result;
 
   d('invocationExpressionHandler');
-  d(node[0]);
+  d(node);
   if (fn) d(fn.toString());
   else d(fn);
   d(args);
 
   // this is here so that debug log nests properly.
   // I know, I KNOW! :(
-  result = fn.apply(null, args);
+  result = 'function' === typeof fn? fn.apply(null, args) : fn;
 
   d(result);
   d('/invocationExpressionHandler');
