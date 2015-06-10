@@ -1,3 +1,5 @@
+import "assert" as assert
+
 let a = [ 1 2 "mudit" 4 ]
 let b = [
   1
@@ -14,7 +16,23 @@ let f = [
 let g = ["g"
         ]
 let h = ["mate" [1 2 3] [{:a 20 :b [1 2 3 4 5]}]]
-print (push a 10)
+
+print (push a 10) // this doesn't affect 'a' since push returns a new list with given element pushed on it
+
+assert.deepEqual a [1 2 "mudit" 4] "a should be [1 2 'mudit' 4]"
+assert.deepEqual b [ 1 2 3 4] "b should be [1 2 3 4]"
+assert.deepEqual c [ 1 2 3 4] "c should be [1 2 3 4]"
+assert.deepEqual d [1] "d should be [1]"
+assert.deepEqual e ["e"] "e should be ['e']"
+assert.deepEqual f ["f"] "f should be ['f']"
+assert.deepEqual g ["g"] "g should be ['g']"
+assert (h.0 == "mate") "h.0 should be 'mate'"
+assert.deepEqual h.1 [1 2 3] "h.1 should be [1 2 3]"
+assert.deepEqual h.2.0 {:a 20 :b [1 2 3 4 5]} "h.2.0 should be [{:a 20 :b [1 2 3 4 5]}]"
+assert (h.2.0.a == 20) "h.2.0.a should be 20"
+assert.deepEqual h.2.0.b [1 2 3 4 5] "h.2.0.b should be [1 2 3 4 5]"
+
+
 print b
 print c
 print d e f g
@@ -22,6 +40,7 @@ print h
 print h.0
 print h.1 h.1.0 h.1.1 h.1.2
 print h.2.0 h.2.0.a h.2.0.b h.2.0.b.1
+
 // [ 1 2 3 4 ]
 // [
 //   1
