@@ -405,7 +405,7 @@ function loadJSModule(moduleName) {
 function loadMoksModule(path, root) {
   path = p.resolve(root, path);
   const pgm = parse(fs.readFileSync(path, 'utf8'));
-  let newScope = createScope(stdlib, { __filepath__: p.dirname(path) });
+  let newScope = createScope(stdlib, createScope({ __filepath__: p.dirname(path) }, {}));
 
   d('loadMoksModule');
   d(newScope);
