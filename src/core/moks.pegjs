@@ -94,6 +94,7 @@ FutureKeyword "FutureKeyword"
   = "export"
   / "import"
   / "default"
+  / "nil"
 
 Integer "Integer"
   = integer:(UnaryOperator?Digits)                                                                     { return parseInt(integer.join(""), 10) }
@@ -134,8 +135,15 @@ HashMap "HashMap"
 KeyVal "KeyVal"
   = ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator+               { return [node("Key", key.join("")), val] }
 
+NilLiteral "NilLiteral"
+  = "nil"
+
+Nil "Nil"
+  = nil:NilLiteral                                                                                     { return node("Nil", null) }
+
 Atom "Atom"
-  = Number
+  = Nil
+  / Number
   / Boolean
   / String
   / Array

@@ -10,7 +10,7 @@ const d           = require('./util').log;
 const setInScope  = require('./scope').setInScope;
 const findInScope = require('./scope').findInScope;
 const createScope = require('./scope').createScope;
-const atoms       = ['Number', 'Boolean', 'String', 'Identifier', 'Array', 'HashMap'];
+const atoms       = ['Nil', 'Number', 'Boolean', 'String', 'Identifier', 'Array', 'HashMap'];
 const ops         = [
   'DivisionOperator', 'MultiplicationOperator', 'AdditionOperator', 'SubtractionOperator',
   'AndOperator', 'OrOperator', 'EqualityOperator', 'InequalityOperator', 'LTEOperator',
@@ -45,6 +45,7 @@ function atomsHandler(atom, scope) {
     case 'Number':
     case 'Boolean':
     case 'String':
+    case 'Nil':
       return atom.val;
     case 'Identifier':
       return findInScope(scope, atom.val);
@@ -74,6 +75,9 @@ function assignmentExpressionHandler(node, scope) {
     let traversalResult = traverse(node.val[1], scope);
     let thunk;
 
+    d('AtomAssignment');
+    d(traversalResult);
+    d('/AtomAssignment');
     // everything is a function
     // so even atoms are converted into functions that return the atom
     // for e.g., 8 is converted to function (){ return 8; }
@@ -85,8 +89,7 @@ function assignmentExpressionHandler(node, scope) {
     if (
       'function' !== typeof traversalResult &&
       !Array.isArray(traversalResult) &&
-      'object' !== typeof traversalResult &&
-      null !== traversalResult
+      ('object' !== typeof traversalResult || null === traversalResult)
     ) thunk = function () { return traversalResult; };
 
     // d('Traversal result:');
@@ -152,7 +155,8 @@ function invocationExpressionHandler(node, scope) {
 
   d('invocationExpressionHandler');
   d(node[0]);
-  d(fn.toString());
+  if (fn) d(fn.toString());
+  else d(fn);
   d(args);
 
   // this is here so that debug log nests properly.
