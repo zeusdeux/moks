@@ -209,7 +209,7 @@ FromOpExpression "FromOpExpression"
 CommentExpression "CommentExpression"
   = Whitespace* "//" Whitespace* comment:CommentContent*                                               { return node("CommentExpression", comment.join("")) }
 
-CommentContent = !ExpressionTerminator comment:.                                                       { return comment }
+CommentContent = !LineTerminator comment:.                                                             { return comment }
 
 // temporarily making "as" required
 ImportExpression "ImportExpression"
