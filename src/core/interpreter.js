@@ -35,6 +35,16 @@ function isOp(node) {
   return ops.indexOf(node.type) > -1;
 }
 
+// isThunkifiable :: Val -> Bool
+function isThunkifiable(val) {
+  if (
+    'function' !== typeof val &&
+      !Array.isArray(val) &&
+      ('object' !== typeof val || null === val)
+  ) return true;
+  return false;
+}
+
 // type Type = String
 // data Node v = Node Type v
 // newtype Scope = Map Identifier Value
@@ -86,11 +96,7 @@ function assignmentExpressionHandler(node, scope) {
     // then findInScope(scope, a) will return the thunk for 'a'
     // so we needn't wrap it again hence the check below
     // Note: Arrays and objects aren't stored as thunks so that it's easier to deref them
-    if (
-      'function' !== typeof traversalResult &&
-      !Array.isArray(traversalResult) &&
-      ('object' !== typeof traversalResult || null === traversalResult)
-    ) thunk = function () { return traversalResult; };
+    if (isThunkifiable(traversalResult)) thunk = function () { return traversalResult; };
 
     // d('Traversal result:');
     // d('identifier:');
@@ -424,19 +430,26 @@ function generateWrapperFnFromBlockAndArgs(params, blockNode, scope) {
 
     d('Block to Generated wrapper fn');
     d(args);
-    d(newScope);
 
     newScope = newScope.__params__.reduce((p, c) => {
       let temp = args.shift();
 
-      p[c] = function() {
-        return temp;
-      };
+      // thunkify only if:
+      if (isThunkifiable(temp)) {
+        p[c] = function() {
+          return temp;
+        };
+      }
+      else p[c] = temp;
+
       return p;
     }, newScope);
 
+    d(newScope);
+    d(newScope.args);
     d(blockNode);
     d('Going to traverse');
+
     result = traverse(blockNode, newScope);
 
     d(result);
