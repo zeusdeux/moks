@@ -10,15 +10,28 @@ let parse     = require('../src/core/parser');
 let interpret = require('../src/core/interpreter');
 let args      = require('minimist')(process.argv.slice(2));
 
-if (args.e || args.E) {
-  interpret(
-    parse(args.e || args.E),
-    scope.createScope(stdlib, scope.createScope({__filepath__: process.cwd()}, {}))
-  );
+try {
+  if (args.e || args.E) {
+    interpret(
+      parse(args.e || args.E),
+      scope.createScope(stdlib, scope.createScope({__filepath__: process.cwd()}, {}))
+    );
+  }
+  else {
+    interpret(
+      parse(fs.readFileSync(args._[0], {encoding: 'utf-8'})),
+      scope.createScope(stdlib, scope.createScope({__filepath__: path.dirname(path.resolve(process.cwd(), args._[0]))}, {}))
+    );
+  }
 }
-else {
-  interpret(
-    parse(fs.readFileSync(args._[0], {encoding: 'utf-8'})),
-    scope.createScope(stdlib, scope.createScope({__filepath__: path.dirname(path.resolve(process.cwd(), args._[0]))}, {}))
-  );
+catch (e) {
+  if (e.offset) {
+    console.error('Parse error:', e.message);
+    console.error('    Offset: %d Line: %d Column: %d',e.offset, e.line, e.column);
+    console.error('    Expected: %s\n    Found: %s', e.expected.map(v => v.description).join(', '), e.found);
+  }
+  else {
+    console.error(e.stack);
+  }
+  process.exit(1);
 }
