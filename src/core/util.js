@@ -1,4 +1,4 @@
-var inspect = require('util').inspect;
+const inspect = require('util').inspect;
 
 
 exports.log = function(input, depth) {

@@ -1,6 +1,6 @@
-var fs   = require('fs');
-var path = require('path');
-var peg  = require('pegjs');
+const fs   = require('fs');
+const path = require('path');
+const peg  = require('pegjs');
 
 
 module.exports = peg.buildParser(

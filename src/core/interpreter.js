@@ -145,10 +145,7 @@ function argumentsHandler(argsNode, scope) {
 
   return argsNode.val.map(v => {
     let temp = traverse(v, scope);
-    // d('********');
-    // d(v);
-    // d(temp.toString());
-    // d('********');
+
     if ('function' === typeof temp && 'LambdaExpression' !== v.type) temp = temp.apply(null);
     return temp;
   });
@@ -168,7 +165,7 @@ function invocationExpressionHandler(node, scope) {
 
   // this is here so that debug log nests properly.
   // I know, I KNOW! :(
-  result = 'function' === typeof fn? fn.apply(null, args) : fn;
+  result = 'function' === typeof fn ? fn.apply(null, args) : fn;
 
   d(result);
   d('/invocationExpressionHandler');
@@ -283,20 +280,16 @@ function setupExtensions(path) {
   let parsedPath = p.parse(path);
 
   if (!parsedPath.ext || parsedPath.ext === '.') {
-    path = path[path.length - 1] === '.'? path.slice(0, -1) : path;
-    return [path+'.mok', path+'.js'];
+    path = '.' === path[path.length - 1] ? path.slice(0, -1) : path;
+    return [path + '.mok', path + '.js'];
   }
   return [path];
 }
 
 function linkFromLoadedModulesToScope(currScope, moduleName, importAs) {
   d('linkFromLoadedModulesToScope');
-  if (!importAs) {
-    setInScope(currScope, '__loadedModules__', __loadedModules__[moduleName]);
-  }
-  else {
-    setInScope(currScope, importAs, __loadedModules__[moduleName]);
-  }
+  if (!importAs) setInScope(currScope, '__loadedModules__', __loadedModules__[moduleName]);
+  else setInScope(currScope, importAs, __loadedModules__[moduleName]);
   d('/linkFromLoadedModulesToScope');
 }
 

@@ -1,12 +1,12 @@
 'use strict';
 
-let fs        = require('fs');
-let path      = require('path');
-let parse     = require('./parser');
-let d         = require('./util').log;
-let interpret = require('./interpreter');
-let pgm       = fs.readFileSync(path.resolve(__dirname, '../../test/fib.mok'), 'utf8');
-let inputs    = [
+const fs        = require('fs');
+const path      = require('path');
+const parse     = require('./parser');
+const d         = require('./util').log;
+const interpret = require('./interpreter');
+const pgm       = fs.readFileSync(path.resolve(__dirname, '../../test/fib.mok'), 'utf8');
+const inputs    = [
   'as;',
   'asd.asdad\n',
   'Math.round\n',
