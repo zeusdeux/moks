@@ -9,7 +9,7 @@
   "bin": {
     "moks": "./bin/moks"
   },
-  "author": "",
+  "author": "Mudit Ameta",
   "license": "MIT",
   "dependencies": {
     "clone": "^1.0.2",
@@ -19,5 +19,22 @@
   "devDependencies": {
     "mocha": "^2.2.4",
     "should": "^6.0.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeusdeux/moks.git"
+  },
+  "keywords": [
+    "moks",
+    "programming",
+    "language",
+    "language"
+  ],
+  "bugs": {
+    "url": "https://github.com/zeusdeux/moks/issues"
+  },
+  "homepage": "https://github.com/zeusdeux/moks#readme"
 }
