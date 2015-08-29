@@ -5,15 +5,15 @@ Sample program in `moks`:
 
 ```moks
 let fib n = {
-  (n < 2)? {
-    1
-  } : {
+  ((n != 0) && (n != 1) && (n > 0))? {
     fib (n-1) + fib (n-2)
+  } : {
+    n
   }
 }
 
-print (fib 10) // should be 89
-print (fib 20) // should be 10946
+print (fib 10) // should be 55
+print (fib 20) // should be 6765
 
 print (map (\x { x + 1; }) [1 2 3 4]) // should be [2 3 4 5]
 
