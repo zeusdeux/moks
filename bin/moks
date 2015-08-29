@@ -14,8 +14,13 @@ let interpret      = require('../src/core/interpreter2');
 let createScope    = require('../src/core/scope2').createScope;
 let filePathSymbol = require('../src/core/scope2').filePathSymbol;
 
+// minimist ends up associating path with --ast when used as, for example, moks --ast test/fib.mok
+// reassociating the filepath with args._[0] to handle that usecase
+if (!args._[0]) args._[0] = args.ast;
+
 const sourceString = args.e || args.E ? args.e || args.E : fs.readFileSync(args._[0], {encoding: 'utf-8'});
 const filePath     = args.e || args.E ? process.cwd() : path.dirname(path.resolve(process.cwd(), args._[0]));
+
 
 function createInitialScope(defaultLib, fPath) {
   return createScope(defaultLib).set(filePathSymbol, fPath);
