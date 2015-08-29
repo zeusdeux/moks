@@ -58,6 +58,8 @@ ArithmeticOperator "ArithmeticOperator"
   / "*"                                                                                                { return node("MultiplicationOperator", "*") }
   / "+"                                                                                                { return node("AdditionOperator", "+") }
   / "-"                                                                                                { return node("SubtractionOperator", "-") }
+  / "^"
+           { return node("ExponentiationOperator", "^") }
 
 LogicalOperator "LogicalOperator"
   = "&&"                                                                                               { return node("AndOperator", "&&") }
@@ -103,18 +105,18 @@ Float "Float"
   = float:(UnaryOperator?Digits"."Digits)                                                              { return parseFloat(float.join(""), 10) }
 
 String "String"
-  = "\"" string:Char* "\""                                                                             { return node("String", string.join("")) }
+  = "\"" string:Char* "\""                                                                             { return node("Atom", node("String", string.join(""))) }
 
 Boolean "Boolean"
-  = TrueLiteral                                                                                        { return node("Boolean", true) }
-  / FalseLiteral                                                                                       { return node("Boolean", false) }
+  = TrueLiteral                                                                                        { return node("Atom", node("Boolean", true)) }
+  / FalseLiteral                                                                                       { return node("Atom", node("Boolean", false)) }
 
 Number "Number"
-  = float:Float                                                                                        { return node("Number", float) }
-  / int:Integer                                                                                        { return node("Number", int) }
+  = float:Float                                                                                        { return node("Atom", node("Number", float)) }
+  / int:Integer                                                                                        { return node("Atom", node("Number", int)) }
 
 Identifier "Identifier"
-  = !ReservedWord first:("_" / Alphabet)rest:IdentifierTail*                                           { return node("Identifier", first+rest.join("")) }
+  = !ReservedWord first:("_" / Alphabet)rest:IdentifierTail*                                           { return node("Atom", node("Identifier", first+rest.join(""))) }
 
 IdentifierTail "IdentifierTail"
   = dot:"."? rest:("_" / Alphabet / Digit)                                                             { if (dot) return dot+rest; else return rest; }
@@ -123,14 +125,14 @@ Identifiers "Identifiers"
   = Whitespace+ id:Identifier                                                                          { return id }
 
 Array "Array"
-  = Whitespace* "[" WhitespaceOrLineTerminator* atoms:Atoms* WhitespaceOrLineTerminator* "]"           { return node("Array", atoms) }
+  = Whitespace* "[" WhitespaceOrLineTerminator* atoms:Atoms* WhitespaceOrLineTerminator* "]"           { return node("Atom", node("Array", atoms)) }
   / Whitespace* "[" WhitespaceOrLineTerminator*
-    atoms:Atoms* lastAtom:Atom WhitespaceOrLineTerminator* "]"                                         { return node("Array", atoms.push(lastAtom) && atoms) }
+    atoms:Atoms* lastAtom:Atom WhitespaceOrLineTerminator* "]"                                         { return node("Atom", node("Array", atoms.push(lastAtom) && atoms)) }
 
 HashMap "HashMap"
-  = Whitespace* "{" WhitespaceOrLineTerminator* keyVal:KeyVal*  WhitespaceOrLineTerminator* "}"        { return node("HashMap", keyVal) }
+  = Whitespace* "{" WhitespaceOrLineTerminator* keyVal:KeyVal*  WhitespaceOrLineTerminator* "}"        { return node("Atom", node("HashMap", keyVal)) }
   / Whitespace* "{" WhitespaceOrLineTerminator* keyVal:KeyVal*
-    ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator* "}"           { return node("HashMap", keyVal.push([node("Key", key.join("")), val]) && keyVal) }
+    ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator* "}"           { return node("Atom", node("HashMap", keyVal.push([node("Key", key.join("")), val]) && keyVal)) }
 
 KeyVal "KeyVal"
   = ":"key:(Alphabet / Digit / Symbol)* Whitespace+ val:Atom WhitespaceOrLineTerminator+               { return [node("Key", key.join("")), val] }
@@ -139,7 +141,7 @@ NilLiteral "NilLiteral"
   = "nil"
 
 Nil "Nil"
-  = nil:NilLiteral                                                                                     { return node("Nil", null) }
+  = nil:NilLiteral                                                                                     { return node("Atom", node("Nil", null)) }
 
 Atom "Atom"
   = Nil
@@ -176,8 +178,8 @@ AssignmentExpression "AssignmentExpression"
   / blockAssignment:BlockAssignment                                                                    { return node("AssignmentExpression", blockAssignment) }
 
 InvocationExpression "InvocationExpression"
-  = Whitespace* functionId:Identifier args:Arguments*                                                  { return node("InvocationExpression", [functionId, node("Arguments", args)]); }
-  / Whitespace* lambda:LambdaExpression args:Arguments*                                                { return node("InvocationExpression", [lambda, node("Arguments", args)]) }
+  = Whitespace* functionId:Identifier args:Arguments*                                                  { return node("InvocationExpression", [functionId, args]); }
+  / Whitespace* lambda:LambdaExpression args:Arguments*                                                { return node("InvocationExpression", [lambda, args]) }
 
 Argument "Argument"
   = Atom
@@ -193,10 +195,10 @@ LambdaExpression "LambdaExpression"
   / "(\\" Whitespace* block:Block Whitespace* ")"                                                      { return node("LambdaExpression", [block]) }
 
 OperatorExpression "OperatorExpression"
-  = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("BinaryOperatorExpression", [arg1].concat(rest[0])) }
-  / Whitespace* unaryOp:UnaryLogicalOperator expr:OpArgument Whitespace* rest:FromOpExpression*        { return node("UnaryOperatorExpression", [unaryOp, expr].concat(rest)) }
+  = Whitespace* arg1:OpArgument Whitespace* rest:FromOpExpression+                                     { return node("OperatorExpression", node("BinaryOperatorExpression", [arg1].concat(rest[0]))) }
+  / Whitespace* unaryOp:UnaryLogicalOperator expr:OpArgument Whitespace* rest:FromOpExpression*        { return node("OperatorExpression", node("UnaryOperatorExpression", [unaryOp, expr].concat(rest))) }
   / Whitespace* predicate:OpArgument Whitespace* "?" Whitespace*
-    trueExpr:(Block / Expression) Whitespace* ":" Whitespace* falseExpr:(Block / Expression)           { return node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr]) }
+    trueExpr:(Block / Expression) Whitespace* ":" Whitespace* falseExpr:(Block / Expression)           { return node("OperatorExpression", node("TernaryOperatorExpression", [predicate, trueExpr, falseExpr])) }
 
 OpArgument "OpArgument"
   = InvocationExpression
